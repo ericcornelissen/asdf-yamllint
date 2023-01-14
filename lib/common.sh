@@ -70,7 +70,7 @@ install_version() {
 	mkdir -p "${bin_install_path}"
 
 	if [ -n "${download_path}" ]; then
-		cp --recursive "${download_path}/yamllint-${version}" "${install_path}"
+		cp -r "${download_path}/yamllint-${version}" "${install_path}"
 	fi
 
 	(
