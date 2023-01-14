@@ -10,7 +10,4 @@ source "${plugin_dir}/lib/common.sh"
 check_env_var "ASDF_DOWNLOAD_PATH" "${ASDF_DOWNLOAD_PATH}"
 check_env_var "ASDF_INSTALL_VERSION" "${ASDF_INSTALL_VERSION}"
 
-check_prerequisite 'curl'
-check_prerequisite 'jq'
-
 download_version "${ASDF_INSTALL_VERSION}" "${ASDF_DOWNLOAD_PATH}"

@@ -7,7 +7,4 @@ plugin_dir=$(dirname "$(dirname "${current_script_path}")")
 # shellcheck source=./lib/common.sh
 source "${plugin_dir}/lib/common.sh"
 
-check_prerequisite 'curl'
-check_prerequisite 'jq'
-
 list_versions
