@@ -1,0 +1,35 @@
+name: Publish
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+
+permissions: read-all
+
+jobs:
+  github:
+    name: GitHub Release
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write # To create a GitHub Release
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - name: Get version
+        uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
+        id: version
+        with:
+          result-encoding: string
+          script: |
+            const ref = context.ref
+            const tag = ref.replace(/^refs\/tags\//, "")
+            return tag
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@a2e71bdd4e7dab70ca26a852f29600c98b33153e # v1.12.0
+        with:
+          name: Release ${{ steps.version.outputs.result }}
+          body: Release ${{ steps.version.outputs.result }}
+          tag: ${{ steps.version.outputs.result }}
+          draft: false
+          makeLatest: true
+          prerelease: false

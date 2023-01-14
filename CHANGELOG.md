@@ -1,0 +1,7 @@
+# Changelog
+
+All notable changes to _asdf-yamllint_ will be documented in this file.
+
+## Changes
+
+- (2023-01-14) Initial release.
