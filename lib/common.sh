@@ -48,7 +48,6 @@ download_version() {
 	_check_prerequisite 'curl'
 	_check_prerequisite 'jq'
 	_check_prerequisite 'rm'
-	_check_prerequisite 'sha256sum'
 	_check_prerequisite 'tar'
 
 	local -r version="$1"
@@ -59,6 +58,7 @@ download_version() {
 	local -r download_url="$(echo "${download_json}" | jq -r '.url')"
 	local -r tar_checksum="$(echo "${download_json}" | jq -r '.digests.sha256')"
 
+	local -r checksum_file="${install_path}/checksum.txt"
 	local -r tar_file="${install_path}/yamllint-${version}.tar.gz"
 
 	mkdir -p "${install_path}"
@@ -69,14 +69,19 @@ download_version() {
 		"${download_url}"
 
 	echo "Verifying checksum for ${tar_file}"
-	echo "${tar_checksum}" "${tar_file}" | sha256sum --check --quiet
+	local shasum_command='shasum --algorithm 256'
+	if ! command -v shasum &>/dev/null; then
+		shasum_command='sha256sum'
+	fi
+	echo "${tar_checksum}  ${tar_file}" > "${checksum_file}"
+	${shasum_command} --quiet --check "${checksum_file}"
 
 	tar --extract --gzip \
 		--directory "${install_path}" \
 		--file "${tar_file}" \
 		"yamllint-${version}"
 
-	rm --force "${tar_file}"
+	rm --force "${checksum_file}" "${tar_file}"
 }
 
 install_version() {
