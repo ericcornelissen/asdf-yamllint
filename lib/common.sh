@@ -7,6 +7,15 @@ base_url="https://pypi.org/pypi/yamllint"
 exit_code_missing_env_var=1
 exit_code_missing_cmd=2
 
+_check_prerequisite() {
+	local -r name="$1"
+
+	if [ -z "$(command -v "${name}")" ]; then
+		echo "'${name} 'is required for this command"
+		exit "${exit_code_missing_cmd}"
+	fi
+}
+
 _get_download_url() {
 	local -r version="$1"
 
@@ -29,22 +38,22 @@ check_env_var() {
 	fi
 }
 
-check_prerequisite() {
-	local -r name="$1"
-
-	if [ -z "$(command -v "${name}")" ]; then
-		echo "'${name} 'is required for this command"
-		exit "${exit_code_missing_cmd}"
-	fi
-}
-
 list_versions() {
+	_check_prerequisite 'curl'
+	_check_prerequisite 'jq'
+	_check_prerequisite 'sed'
+	_check_prerequisite 'sort'
+	_check_prerequisite 'awk'
+
 	curl --silent "https://pypi.org/pypi/yamllint/json" |
 		jq --raw-output '.releases | keys[]' |
 		_sort_versions
 }
 
 download_version() {
+	_check_prerequisite 'curl'
+	_check_prerequisite 'jq'
+
 	local -r version="$1"
 	local -r install_path="$2"
 
@@ -60,6 +69,10 @@ download_version() {
 }
 
 install_version() {
+	_check_prerequisite 'mkdir'
+	_check_prerequisite 'cp'
+	_check_prerequisite 'python3'
+
 	local -r version="$1"
 	local -r install_path="$2"
 	local -r download_path="$3"
