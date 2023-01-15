@@ -59,7 +59,7 @@ download_version() {
 
 	local -r download_url="$(_get_download_url "${version}")"
 
-	mkdir --parents "${install_path}"
+	mkdir -p "${install_path}"
 
 	echo "Downloading yamllint from ${download_url} to ${install_path}"
 	curl --silent "${download_url}" | \
@@ -80,10 +80,10 @@ install_version() {
 	local -r bin_install_path="${install_path}/bin"
 	local -r bin_path="${bin_install_path}/yamllint"
 
-	mkdir --parents "${bin_install_path}"
+	mkdir -p "${bin_install_path}"
 
 	if [ -n "${download_path}" ]; then
-		cp --recursive "${download_path}/yamllint-${version}" "${install_path}"
+		cp -r "${download_path}/yamllint-${version}" "${install_path}"
 	fi
 
 	(
