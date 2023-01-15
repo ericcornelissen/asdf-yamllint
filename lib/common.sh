@@ -7,12 +7,6 @@ base_url="https://pypi.org/pypi/yamllint"
 exit_code_missing_env_var=1
 exit_code_missing_cmd=2
 
-_get_download_url() {
-	local -r version="$1"
-
-	curl --silent "${base_url}/${version}/json" | jq -r '.urls[1].url'
-}
-
 # Based on https://github.com/rbenv/ruby-build/blob/697bcff/bin/ruby-build#L1371-L1374
 _sort_versions() {
 	sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' | \
@@ -48,15 +42,29 @@ download_version() {
 	local -r version="$1"
 	local -r install_path="$2"
 
-	local -r download_url="$(_get_download_url "${version}")"
+	local -r version_json="$(curl --silent "${base_url}/${version}/json")"
+	local -r download_json="$(echo "${version_json}" | jq -r '.urls[1]')"
+	local -r download_url="$(echo "${download_json}" | jq -r '.url')"
+	local -r tar_checksum="$(echo "${download_json}" | jq -r '.digests.sha256')"
+
+	local -r tar_file="${install_path}/yamllint-${version}.tar.gz"
 
 	mkdir -p "${install_path}"
 
 	echo "Downloading yamllint from ${download_url} to ${install_path}"
-	curl --silent "${download_url}" | \
-		tar --extract --gzip \
-			--directory "${install_path}" \
-			"yamllint-${version}"
+	curl --silent --show-error \
+		--output "${tar_file}" \
+		"${download_url}"
+
+	echo "Verifying checksum for ${tar_file}"
+	echo "${tar_checksum}" "${tar_file}" | sha256sum --check --quiet
+
+	tar --extract --gzip \
+		--directory "${install_path}" \
+		--file "${tar_file}" \
+		"yamllint-${version}"
+
+	rm --force "${tar_file}"
 }
 
 install_version() {
