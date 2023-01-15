@@ -81,7 +81,7 @@ download_version() {
 		--file "${tar_file}" \
 		"yamllint-${version}"
 
-	rm --force "${checksum_file}" "${tar_file}"
+	rm -f "${checksum_file}" "${tar_file}"
 }
 
 install_version() {
