@@ -40,6 +40,8 @@ test-download:
 else
 test-download: | $(TMP_DIR) ## Test run the bin/download script
 	@rm -rf \
+		"${TMP_DIR}/download/checksum.txt" \
+		"${TMP_DIR}/download/yamllint-$(version).tar.gz" \
 		"${TMP_DIR}/download/yamllint-$(version)"
 	@( \
 		ASDF_DOWNLOAD_PATH="${TMP_DIR}/download" \
@@ -54,6 +56,8 @@ test-install:
 else
 test-install: | $(TMP_DIR) ## Test run the bin/install script
 	@rm -rf \
+		"${TMP_DIR}/install/checksum.txt" \
+		"${TMP_DIR}/install/yamllint-$(version).tar.gz" \
 		"${TMP_DIR}/install/bin/yamllint" \
 		"${TMP_DIR}/install/yamllint-$(version)"
 	@( \
