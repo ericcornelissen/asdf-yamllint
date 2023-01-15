@@ -50,8 +50,6 @@ jobs:
             os: macos-12
           - name: Ubuntu
             os: ubuntu-22.04
-          - name: Windows
-            os: windows-2022
     steps:
       - name: asdf plugin test
         uses: asdf-vm/actions/plugin-test@707e84f3ee349548310aeabdad0dd3bfcb9b69fa # v1.1.0
