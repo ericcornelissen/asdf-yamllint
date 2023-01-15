@@ -38,10 +38,18 @@ jobs:
       - name: Run ${{ matrix.command }}
         run: make test-${{ matrix.command }} version=1.29.0
   test-e2e:
-    name: Test end-to-end
-    runs-on: ubuntu-22.04
+    name: Test end-to-end (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
     needs:
       - test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: MacOS
+            os: macos-12
+          - name: Ubuntu
+            os: ubuntu-22.04
     steps:
       - name: asdf plugin test
         uses: asdf-vm/actions/plugin-test@707e84f3ee349548310aeabdad0dd3bfcb9b69fa # v1.1.0
