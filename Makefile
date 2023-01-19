@@ -7,6 +7,20 @@ clean: ## Clean the repository
 	@git clean -fx \
 		$(TMP_DIR)
 
+format:
+	@shfmt --simplify --write \
+		./$(BIN_DIR)/download \
+		./$(BIN_DIR)/install \
+		./$(BIN_DIR)/list-all \
+		./lib/common.sh
+
+format-check:
+	@shfmt --diff \
+		./$(BIN_DIR)/download \
+		./$(BIN_DIR)/install \
+		./$(BIN_DIR)/list-all \
+		./lib/common.sh
+
 help: ## Show this help message
 	@printf "Usage: make <command>\n\n"
 	@printf "Commands:\n"
@@ -73,7 +87,7 @@ test-installation: ## Test that the bin/install script worked
 test-list-all: ## Test run the bin/list-all script
 	@./$(BIN_DIR)/list-all
 
-.PHONY: clean default help lint lint-ci lint-sh release test-download test-install test-installation test-list-all
+.PHONY: clean default format format-check help lint lint-ci lint-sh release test-download test-install test-installation test-list-all
 
 $(TMP_DIR):
 	@mkdir $(TMP_DIR)

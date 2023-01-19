@@ -2,3 +2,4 @@
 
 actionlint 1.6.22
 shellcheck 0.9.0
+shfmt 3.6.0
