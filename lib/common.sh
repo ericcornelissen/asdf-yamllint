@@ -18,7 +18,7 @@ _check_prerequisite() {
 
 # Based on https://github.com/rbenv/ruby-build/blob/697bcff/bin/ruby-build#L1371-L1374
 _sort_versions() {
-	sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' | \
+	sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' |
 		LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}'
 }
 
@@ -73,7 +73,7 @@ download_version() {
 	if ! command -v shasum &>/dev/null; then
 		shasum_command='sha256sum'
 	fi
-	echo "${tar_checksum}  ${tar_file}" > "${checksum_file}"
+	echo "${tar_checksum}  ${tar_file}" >"${checksum_file}"
 	${shasum_command} --quiet --check "${checksum_file}"
 
 	tar --extract --gzip \
@@ -109,7 +109,7 @@ install_version() {
 	fi
 
 	(
-		cd "${install_path}/yamllint-${version}";
+		cd "${install_path}/yamllint-${version}"
 		${python_command} -m pip install --quiet --requirement yamllint.egg-info/requires.txt
 	)
 	{
@@ -117,6 +117,6 @@ install_version() {
 		echo ''
 		echo "PYTHONPATH=\"\${PYTHONPATH}:${install_path}/yamllint-${version}\" \\"
 		echo "${python_command} '${install_path}/yamllint-${version}/yamllint/__main__.py' \"\$@\""
-	} >> "${bin_path}"
+	} >>"${bin_path}"
 	chmod +x "${bin_path}"
 }
