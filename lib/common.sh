@@ -87,7 +87,6 @@ download_version() {
 install_version() {
 	_check_prerequisite 'mkdir'
 	_check_prerequisite 'cp'
-	_check_prerequisite 'python3'
 
 	local -r version="$1"
 	local -r install_path="$2"
@@ -102,15 +101,22 @@ install_version() {
 		cp -r "${download_path}/yamllint-${version}" "${install_path}"
 	fi
 
+	local python_command='python3'
+	if ! command -v python3 &>/dev/null; then
+		if [[ "$(python --version)" =~ .*" 3".* ]]; then
+			python_command='python'
+		fi
+	fi
+
 	(
 		cd "${install_path}/yamllint-${version}";
-		python3 -m pip install --quiet --requirement yamllint.egg-info/requires.txt
+		${python_command} -m pip install --quiet --requirement yamllint.egg-info/requires.txt
 	)
 	{
 		echo '#!/usr/bin/env bash'
 		echo ''
 		echo "PYTHONPATH=\"\${PYTHONPATH}:${install_path}/yamllint-${version}\" \\"
-		echo "python3 '${install_path}/yamllint-${version}/yamllint/__main__.py' \"\$@\""
+		echo "${python_command} '${install_path}/yamllint-${version}/yamllint/__main__.py' \"\$@\""
 	} >> "${bin_path}"
 	chmod +x "${bin_path}"
 }
