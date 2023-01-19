@@ -7,14 +7,14 @@ clean: ## Clean the repository
 	@git clean -fx \
 		$(TMP_DIR)
 
-format:
+format: ## Format the source code
 	@shfmt --simplify --write \
 		./$(BIN_DIR)/download \
 		./$(BIN_DIR)/install \
 		./$(BIN_DIR)/list-all \
 		./lib/common.sh
 
-format-check:
+format-check: ## Check the source code formatting
 	@shfmt --diff \
 		./$(BIN_DIR)/download \
 		./$(BIN_DIR)/install \
