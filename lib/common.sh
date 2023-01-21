@@ -39,7 +39,7 @@ list_versions() {
 	_check_prerequisite 'sort'
 	_check_prerequisite 'awk'
 
-	curl --silent "https://pypi.org/pypi/yamllint/json" |
+	curl --silent "${base_url}/json" |
 		jq --raw-output '.releases | keys[]' |
 		_sort_versions
 }
