@@ -24,6 +24,26 @@ _sort_versions() {
 		awk '{print $2}'
 }
 
+_validate_checksum() {
+	local -r file="$1"
+	local -r expected_checksum="$2"
+
+	local -r checksum_file="$(dirname "${file}")/checksum.txt"
+
+	# Different systems have different programs for computing SHA checksums. To
+	# broaden support, multiple programs are considered. We use whichever one is
+	# available on the current system.
+	local shasum_command='shasum --algorithm 256'
+	if ! command -v shasum &>/dev/null; then
+		shasum_command='sha256sum'
+	fi
+
+	echo "${expected_checksum}  ${file}" >"${checksum_file}"
+	${shasum_command} --quiet --check "${checksum_file}"
+
+	rm -f "${checksum_file}"
+}
+
 check_env_var() {
 	local -r name="$1"
 	local -r value="$2"
@@ -48,6 +68,7 @@ list_versions() {
 
 download_version() {
 	_check_prerequisite 'curl'
+	_check_prerequisite 'dirname'
 	_check_prerequisite 'jq'
 	_check_prerequisite 'rm'
 	_check_prerequisite 'tar'
@@ -60,7 +81,6 @@ download_version() {
 	local -r download_url="$(echo "${download_json}" | jq -r '.url')"
 	local -r tar_checksum="$(echo "${download_json}" | jq -r '.digests.sha256')"
 
-	local -r checksum_file="${download_path}/checksum.txt"
 	local -r tar_file="${download_path}/yamllint-${version}.tar.gz"
 
 	mkdir -p "${download_path}"
@@ -70,23 +90,15 @@ download_version() {
 		--output "${tar_file}" \
 		"${download_url}"
 
-	# Different systems have different programs for computing SHA checksums. To
-	# broaden support, multiple programs are considered. We use whichever one is
-	# available on the current system.
 	echo "Verifying checksum for ${tar_file}"
-	local shasum_command='shasum --algorithm 256'
-	if ! command -v shasum &>/dev/null; then
-		shasum_command='sha256sum'
-	fi
-	echo "${tar_checksum}  ${tar_file}" >"${checksum_file}"
-	${shasum_command} --quiet --check "${checksum_file}"
+	_validate_checksum "${tar_file}" "${tar_checksum}"
 
 	tar --extract --gzip \
 		--directory "${download_path}" \
 		--file "${tar_file}" \
 		"yamllint-${version}"
 
-	rm -f "${checksum_file}" "${tar_file}"
+	rm -f "${tar_file}"
 }
 
 install_version() {
