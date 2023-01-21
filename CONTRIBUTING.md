@@ -24,11 +24,12 @@ To be able to contribute you need the following tooling:
 
 - [Git];
 - [Make];
+- [asdf];
 - (Recommended) a code editor with [EditorConfig] support;
-- (Recommended) [asdf];
 - (Recommended) [Python] v3;
 - (Optional) [actionlint] (see `.tool-versions` for preferred version);
 - (Optional) [ShellCheck] (see `.tool-versions` for preferred version);
+- (Optional) [shfmt] (see `.tool-versions` for preferred version);
 
 [actionlint]: https://github.com/rhysd/actionlint
 [asdf]: https://asdf-vm.com/
@@ -38,3 +39,4 @@ To be able to contribute you need the following tooling:
 [python]: https://www.python.org/
 [security policy]: ./SECURITY.md
 [shellcheck]: https://github.com/koalaman/shellcheck
+[shfmt]: https://github.com/mvdan/sh

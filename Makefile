@@ -1,6 +1,8 @@
 TMP_DIR:=.tmp
 BIN_DIR:=bin
 
+ASDF:=$(TMP_DIR)/.asdf
+
 ALL_SCRIPTS:=./$(BIN_DIR)/* ./lib/*
 
 default: help
@@ -9,10 +11,10 @@ clean: ## Clean the repository
 	@git clean -fx \
 		$(TMP_DIR)
 
-format: ## Format the source code
+format: $(ASDF) ## Format the source code
 	@shfmt --simplify --write $(ALL_SCRIPTS)
 
-format-check: ## Check the source code formatting
+format-check: $(ASDF) ## Check the source code formatting
 	@shfmt --diff $(ALL_SCRIPTS)
 
 help: ## Show this help message
@@ -24,10 +26,10 @@ help: ## Show this help message
 
 lint: lint-ci lint-sh ## Run lint-*
 
-lint-ci: ## Lint CI workflow files
+lint-ci: $(ASDF) ## Lint CI workflow files
 	@actionlint
 
-lint-sh: ## Lint .sh files
+lint-sh: $(ASDF) ## Lint .sh files
 	@shellcheck $(ALL_SCRIPTS)
 
 release: ## Release a new version
@@ -85,3 +87,6 @@ verify: format-check lint ## Verify project is in a good state
 
 $(TMP_DIR):
 	@mkdir $(TMP_DIR)
+$(ASDF): .tool-versions | $(TMP_DIR)
+	@asdf install
+	@touch $(ASDF)
