@@ -38,7 +38,7 @@ else
 	@git push origin "v$v"
 endif
 
-test-download: | $(TMP_DIR) ## Test run the bin/download script
+test-download: | $(TMP_DIR) ## Test run the download script
 ifeq "$(version)" ""
 	@echo 'usage: "make test-download version=1.29.0"'
 else
@@ -49,11 +49,11 @@ else
 	@( \
 		ASDF_DOWNLOAD_PATH="${TMP_DIR}/download" \
 		ASDF_INSTALL_VERSION="$(version)" \
-		./bin/download \
+		./$(BIN_DIR)/download \
 	)
 endif
 
-test-install: | $(TMP_DIR) ## Test run the bin/install script
+test-install: | $(TMP_DIR) ## Test run the install script
 ifeq "$(version)" ""
 	@echo 'usage: "make test-install version=1.29.0"'
 else
@@ -65,14 +65,14 @@ else
 	@( \
 		ASDF_INSTALL_PATH="${TMP_DIR}/install" \
 		ASDF_INSTALL_VERSION="$(version)" \
-		./bin/install \
+		./$(BIN_DIR)/install \
 	)
 endif
 
-test-installation: ## Test that the bin/install script worked
+test-installation: ## Test the installation
 	@$(TMP_DIR)/install/bin/yamllint --help
 
-test-list-all: ## Test run the bin/list-all script
+test-list-all: ## Test run the list-all script
 	@./$(BIN_DIR)/list-all
 
 verify: format-check lint ## Verify project is in a good state
