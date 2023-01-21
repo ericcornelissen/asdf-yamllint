@@ -104,6 +104,10 @@ install_version() {
 		cp -r "${download_path}/yamllint-${version}" "${install_path}"
 	fi
 
+	# Both `python3` and `python` are names commonly used for the Python 3 binary.
+	# The former is definitely Python 3, but not always used. The latter may be
+	# either Python 2 or Python 3 so is used as a fallback and only if it's v3.
+	# The focus on the Python version follows from yamllint only supporting v3.
 	local python_command='python3'
 	if ! command -v python3 &>/dev/null; then
 		if [[ "$(python --version)" =~ .*" 3".* ]]; then
