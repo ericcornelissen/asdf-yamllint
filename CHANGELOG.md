@@ -4,6 +4,7 @@ All notable changes to _asdf-yamllint_ will be documented in this file.
 
 ## Changes
 
+- (2023-01-21) Remove prerequisite checks.
 - (2023-01-19) Add support for using `python`.
 - (2023-01-15) Add checksum verification.
 - (2023-01-15) Improve prerequisite checks.
