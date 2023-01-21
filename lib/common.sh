@@ -46,7 +46,9 @@ list_versions() {
 
 download_version() {
 	_check_prerequisite 'curl'
+	_check_prerequisite 'echo'
 	_check_prerequisite 'jq'
+	_check_prerequisite 'mkdir'
 	_check_prerequisite 'rm'
 	_check_prerequisite 'tar'
 
@@ -86,7 +88,11 @@ download_version() {
 
 install_version() {
 	_check_prerequisite 'mkdir'
+	_check_prerequisite 'cd'
+	_check_prerequisite 'chmod'
+	_check_prerequisite 'command'
 	_check_prerequisite 'cp'
+	_check_prerequisite 'echo'
 
 	local -r version="$1"
 	local -r install_path="$2"
