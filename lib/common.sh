@@ -16,6 +16,21 @@ _check_prerequisite() {
 	fi
 }
 
+_get_python_command() {
+	# Both `python3` and `python` are names commonly used for the Python 3 binary.
+	# The former is definitely Python 3, but not always used. The latter may be
+	# either Python 2 or Python 3 so is used as a fallback and only if it's v3.
+	# The focus on the Python version follows from yamllint only supporting v3.
+	local python_command='python3'
+	if ! command -v python3 &>/dev/null; then
+		if [[ "$(python --version)" =~ .*" 3".* ]]; then
+			python_command='python'
+		fi
+	fi
+
+	echo "${python_command}"
+}
+
 _sort_versions() {
 	# Sort versions as humans would expect rather than just alphabetically.
 	# ref: https://github.com/rbenv/ruby-build/blob/697bcff/bin/ruby-build#L1371
@@ -109,6 +124,8 @@ install_version() {
 	local -r install_path="$2"
 	local -r download_path="$3"
 
+	local -r python_command="$(_get_python_command)"
+
 	local -r bin_install_path="${install_path}/bin"
 	local -r bin_path="${bin_install_path}/yamllint"
 
@@ -118,17 +135,6 @@ install_version() {
 		cp -r "${download_path}/yamllint-${version}" "${install_path}"
 	fi
 
-	# Both `python3` and `python` are names commonly used for the Python 3 binary.
-	# The former is definitely Python 3, but not always used. The latter may be
-	# either Python 2 or Python 3 so is used as a fallback and only if it's v3.
-	# The focus on the Python version follows from yamllint only supporting v3.
-	local python_command='python3'
-	if ! command -v python3 &>/dev/null; then
-		if [[ "$(python --version)" =~ .*" 3".* ]]; then
-			python_command='python'
-		fi
-	fi
-
 	(
 		cd "${install_path}/yamllint-${version}"
 		${python_command} \
@@ -136,6 +142,7 @@ install_version() {
 			--quiet \
 			--requirement yamllint.egg-info/requires.txt
 	)
+
 	{
 		echo '#!/usr/bin/env bash'
 		echo ''
