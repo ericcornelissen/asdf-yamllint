@@ -51,19 +51,19 @@ download_version() {
 	_check_prerequisite 'tar'
 
 	local -r version="$1"
-	local -r install_path="$2"
+	local -r download_path="$2"
 
 	local -r version_json="$(curl --silent "${base_url}/${version}/json")"
 	local -r download_json="$(echo "${version_json}" | jq -r '.urls[1]')"
 	local -r download_url="$(echo "${download_json}" | jq -r '.url')"
 	local -r tar_checksum="$(echo "${download_json}" | jq -r '.digests.sha256')"
 
-	local -r checksum_file="${install_path}/checksum.txt"
-	local -r tar_file="${install_path}/yamllint-${version}.tar.gz"
+	local -r checksum_file="${download_path}/checksum.txt"
+	local -r tar_file="${download_path}/yamllint-${version}.tar.gz"
 
-	mkdir -p "${install_path}"
+	mkdir -p "${download_path}"
 
-	echo "Downloading yamllint from ${download_url} to ${install_path}"
+	echo "Downloading yamllint from ${download_url} to ${download_path}"
 	curl --silent --show-error \
 		--output "${tar_file}" \
 		"${download_url}"
@@ -77,7 +77,7 @@ download_version() {
 	${shasum_command} --quiet --check "${checksum_file}"
 
 	tar --extract --gzip \
-		--directory "${install_path}" \
+		--directory "${download_path}" \
 		--file "${tar_file}" \
 		"yamllint-${version}"
 
