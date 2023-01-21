@@ -16,8 +16,9 @@ _check_prerequisite() {
 	fi
 }
 
-# Based on https://github.com/rbenv/ruby-build/blob/697bcff/bin/ruby-build#L1371-L1374
 _sort_versions() {
+	# Sort versions as humans would expect rather than just alphabetically.
+	# ref: https://github.com/rbenv/ruby-build/blob/697bcff/bin/ruby-build#L1371
 	sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' |
 		LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}'
 }
