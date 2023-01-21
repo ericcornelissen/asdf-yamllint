@@ -19,7 +19,8 @@ _check_prerequisite() {
 # Based on https://github.com/rbenv/ruby-build/blob/697bcff/bin/ruby-build#L1371-L1374
 _sort_versions() {
 	sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' |
-		LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}'
+		LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n |
+		awk '{print $2}'
 }
 
 check_env_var() {
@@ -110,7 +111,10 @@ install_version() {
 
 	(
 		cd "${install_path}/yamllint-${version}"
-		${python_command} -m pip install --quiet --requirement yamllint.egg-info/requires.txt
+		${python_command} \
+			-m pip install \
+			--quiet \
+			--requirement yamllint.egg-info/requires.txt
 	)
 	{
 		echo '#!/usr/bin/env bash'
