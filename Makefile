@@ -48,11 +48,10 @@ else
 	@git push origin "v$v"
 endif
 
+test-download: | $(TMP_DIR) ## Test run the bin/download script
 ifeq "$(version)" ""
-test-download:
 	@echo 'usage: "make test-download version=1.29.0"'
 else
-test-download: | $(TMP_DIR) ## Test run the bin/download script
 	@rm -rf \
 		"${TMP_DIR}/download/checksum.txt" \
 		"${TMP_DIR}/download/yamllint-$(version).tar.gz" \
@@ -64,11 +63,10 @@ test-download: | $(TMP_DIR) ## Test run the bin/download script
 	)
 endif
 
+test-install: | $(TMP_DIR) ## Test run the bin/install script
 ifeq "$(version)" ""
-test-install:
 	@echo 'usage: "make test-install version=1.29.0"'
 else
-test-install: | $(TMP_DIR) ## Test run the bin/install script
 	@rm -rf \
 		"${TMP_DIR}/install/checksum.txt" \
 		"${TMP_DIR}/install/yamllint-$(version).tar.gz" \
