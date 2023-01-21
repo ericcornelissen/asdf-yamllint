@@ -28,7 +28,7 @@ help: ## Show this help message
 		printf "  \033[36m%-30s\033[0m %s\n", $$1, $$NF \
 	}' $(MAKEFILE_LIST)
 
-lint: lint-ci lint-sh
+lint: lint-ci lint-sh ## Run lint-*
 
 lint-ci: ## Lint CI workflow files
 	@actionlint
@@ -85,7 +85,9 @@ test-installation: ## Test that the bin/install script worked
 test-list-all: ## Test run the bin/list-all script
 	@./$(BIN_DIR)/list-all
 
-.PHONY: clean default format format-check help lint lint-ci lint-sh release test-download test-install test-installation test-list-all
+verify: format-check lint ## Verify project is in a good state
+
+.PHONY: clean default format format-check help lint lint-ci lint-sh release test-download test-install test-installation test-list-all verify
 
 $(TMP_DIR):
 	@mkdir $(TMP_DIR)
