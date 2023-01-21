@@ -1,6 +1,8 @@
 TMP_DIR:=.tmp
 BIN_DIR:=bin
 
+ALL_SCRIPTS:=./$(BIN_DIR)/* ./lib/*
+
 default: help
 
 clean: ## Clean the repository
@@ -8,18 +10,10 @@ clean: ## Clean the repository
 		$(TMP_DIR)
 
 format: ## Format the source code
-	@shfmt --simplify --write \
-		./$(BIN_DIR)/download \
-		./$(BIN_DIR)/install \
-		./$(BIN_DIR)/list-all \
-		./lib/common.sh
+	@shfmt --simplify --write $(ALL_SCRIPTS)
 
 format-check: ## Check the source code formatting
-	@shfmt --diff \
-		./$(BIN_DIR)/download \
-		./$(BIN_DIR)/install \
-		./$(BIN_DIR)/list-all \
-		./lib/common.sh
+	@shfmt --diff $(ALL_SCRIPTS)
 
 help: ## Show this help message
 	@printf "Usage: make <command>\n\n"
@@ -34,11 +28,7 @@ lint-ci: ## Lint CI workflow files
 	@actionlint
 
 lint-sh: ## Lint .sh files
-	@shellcheck \
-		./$(BIN_DIR)/download \
-		./$(BIN_DIR)/install \
-		./$(BIN_DIR)/list-all \
-		./lib/common.sh
+	@shellcheck $(ALL_SCRIPTS)
 
 release: ## Release a new version
 ifeq "$v" ""
