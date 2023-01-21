@@ -68,6 +68,9 @@ download_version() {
 		--output "${tar_file}" \
 		"${download_url}"
 
+	# Different systems have different programs for computing SHA checksums. To
+	# broaden support, multiple programs are considered. We use whichever one is
+	# available on the current system.
 	echo "Verifying checksum for ${tar_file}"
 	local shasum_command='shasum --algorithm 256'
 	if ! command -v shasum &>/dev/null; then
