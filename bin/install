@@ -10,6 +10,9 @@ source "${plugin_dir}/lib/common.sh"
 check_env_var "ASDF_INSTALL_PATH" "${ASDF_INSTALL_PATH}"
 check_env_var "ASDF_INSTALL_VERSION" "${ASDF_INSTALL_VERSION}"
 
+# Run the download script as a fallback for asdf version 0.7.x as detected by
+# the absence of the (in 0.8.0 introduced) ASDF_DOWNLOAD_PATH variable.
+# ref: https://github.com/asdf-vm/asdf/blob/06cd31a/docs/plugins/create.md
 if [ -z "${ASDF_DOWNLOAD_PATH}" ]; then
 	download_version "${ASDF_INSTALL_VERSION}" "${ASDF_INSTALL_PATH}"
 fi
