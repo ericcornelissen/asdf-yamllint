@@ -87,7 +87,11 @@ test-list-all: ## Test run the bin/list-all script
 
 verify: format-check lint ## Verify project is in a good state
 
-.PHONY: clean default format format-check help lint lint-ci lint-sh release test-download test-install test-installation test-list-all verify
+.PHONY: \
+	clean default help release verify \
+	format format-check \
+	lint lint-ci lint-sh \
+	test-download test-install test-installation test-list-all
 
 $(TMP_DIR):
 	@mkdir $(TMP_DIR)
