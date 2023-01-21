@@ -33,11 +33,11 @@ check_env_var() {
 }
 
 list_versions() {
+	_check_prerequisite 'awk'
 	_check_prerequisite 'curl'
 	_check_prerequisite 'jq'
 	_check_prerequisite 'sed'
 	_check_prerequisite 'sort'
-	_check_prerequisite 'awk'
 
 	curl --silent "https://pypi.org/pypi/yamllint/json" |
 		jq --raw-output '.releases | keys[]' |
@@ -87,12 +87,12 @@ download_version() {
 }
 
 install_version() {
-	_check_prerequisite 'mkdir'
 	_check_prerequisite 'cd'
 	_check_prerequisite 'chmod'
 	_check_prerequisite 'command'
 	_check_prerequisite 'cp'
 	_check_prerequisite 'echo'
+	_check_prerequisite 'mkdir'
 
 	local -r version="$1"
 	local -r install_path="$2"
