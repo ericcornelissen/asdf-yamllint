@@ -5,6 +5,12 @@ An [asdf] plugin for [yamllint].
 ## Plugin Installation
 
 ```sh
+asdf plugin add yamllint
+```
+
+or
+
+```sh
 asdf plugin add yamllint https://github.com/ericcornelissen/asdf-yamllint
 ```
 
