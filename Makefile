@@ -2,6 +2,7 @@ TMP_DIR:=.tmp
 BIN_DIR:=bin
 
 ASDF:=$(TMP_DIR)/.asdf
+DEV_IMG:=$(TMP_DIR)/.dev-img
 
 ALL_SCRIPTS:=./$(BIN_DIR)/* ./lib/*
 
@@ -10,6 +11,15 @@ default: help
 clean: ## Clean the repository
 	@git clean -fx \
 		$(TMP_DIR)
+
+dev-env: $(DEV_IMG) ## Run an ephemeral dev env with Docker
+	@docker run \
+		-it \
+		--rm \
+		--workdir "/asdf-yamllint" \
+		--mount "type=bind,source=$(shell pwd),target=/asdf-yamllint" \
+		--name "asdf-yamllint-dev" \
+		asdf-yamllint-dev-img
 
 format: $(ASDF) ## Format the source code
 	@shfmt --simplify --write $(ALL_SCRIPTS)
@@ -80,7 +90,7 @@ test-list-all: ## Test run the list-all script
 verify: format-check lint ## Verify project is in a good state
 
 .PHONY: \
-	clean default help release verify \
+	clean default dev-env help release verify \
 	format format-check \
 	lint lint-ci lint-sh \
 	test-download test-install test-installation test-list-all
@@ -90,3 +100,8 @@ $(TMP_DIR):
 $(ASDF): .tool-versions | $(TMP_DIR)
 	@asdf install
 	@touch $(ASDF)
+$(DEV_IMG): Dockerfile | $(TMP_DIR)
+	@docker build \
+		--tag asdf-yamllint-dev-img \
+		.
+	@touch $(DEV_IMG)

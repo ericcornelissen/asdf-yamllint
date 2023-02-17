@@ -28,11 +28,13 @@ To be able to contribute you need the following tooling:
 - (Recommended) a code editor with [EditorConfig] support;
 - (Recommended) [Python] v3;
 - (Optional) [actionlint] (see `.tool-versions` for preferred version);
+- (Optional) [Docker] (development environment available)
 - (Optional) [ShellCheck] (see `.tool-versions` for preferred version);
 - (Optional) [shfmt] (see `.tool-versions` for preferred version);
 
 [actionlint]: https://github.com/rhysd/actionlint
 [asdf]: https://asdf-vm.com/
+[docker]: https://www.docker.com/
 [editorconfig]: https://editorconfig.org/
 [git]: https://git-scm.com/
 [make]: https://www.gnu.org/software/make/
