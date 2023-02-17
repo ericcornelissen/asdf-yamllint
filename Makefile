@@ -34,10 +34,13 @@ help: ## Show this help message
 		printf "  \033[36m%-30s\033[0m %s\n", $$1, $$NF \
 	}' $(MAKEFILE_LIST)
 
-lint: lint-ci lint-sh ## Run lint-*
+lint: lint-ci lint-docker lint-sh ## Run lint-*
 
 lint-ci: $(ASDF) ## Lint CI workflow files
 	@actionlint
+
+lint-docker: $(ASDF) ## Lint the Dockerfile
+	@hadolint Dockerfile
 
 lint-sh: $(ASDF) ## Lint .sh files
 	@shellcheck $(ALL_SCRIPTS)
@@ -92,7 +95,7 @@ verify: format-check lint ## Verify project is in a good state
 .PHONY: \
 	clean default dev-env help release verify \
 	format format-check \
-	lint lint-ci lint-sh \
+	lint lint-ci lint-docker lint-sh \
 	test-download test-install test-installation test-list-all
 
 $(TMP_DIR):

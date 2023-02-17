@@ -1,0 +1,19 @@
+# Check out hadolint at: https://github.com/hadolint/hadolint
+
+failure-threshold: style
+format: tty
+
+override:
+  error: ~
+  warning: ~
+  info: ~
+  style: ~
+ignored:
+  - DL3018
+  - SC1091
+
+label-schema: ~
+strict-labels: true
+
+trustedRegistries:
+  - docker.io

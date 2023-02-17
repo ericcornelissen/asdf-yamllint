@@ -29,6 +29,9 @@ jobs:
       - name: Lint CI workflows
         if: ${{ failure() || success() }}
         run: make lint-ci
+      - name: Lint Dockerfile
+        if: ${{ failure() || success() }}
+        run: make lint-docker
       - name: Lint shell scripts
         if: ${{ failure() || success() }}
         run: make lint-sh

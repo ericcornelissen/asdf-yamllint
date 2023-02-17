@@ -29,6 +29,7 @@ To be able to contribute you need the following tooling:
 - (Recommended) [Python] v3;
 - (Optional) [actionlint] (see `.tool-versions` for preferred version);
 - (Optional) [Docker] (development environment available)
+- (Optional) [hadolint] (see `.tool-versions` for preferred version);
 - (Optional) [ShellCheck] (see `.tool-versions` for preferred version);
 - (Optional) [shfmt] (see `.tool-versions` for preferred version);
 
@@ -37,6 +38,7 @@ To be able to contribute you need the following tooling:
 [docker]: https://www.docker.com/
 [editorconfig]: https://editorconfig.org/
 [git]: https://git-scm.com/
+[hadolint]: https://github.com/hadolint/hadolint
 [make]: https://www.gnu.org/software/make/
 [python]: https://www.python.org/
 [security policy]: ./SECURITY.md
