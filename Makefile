@@ -12,7 +12,7 @@ clean: ## Clean the repository
 	@git clean -fx \
 		$(TMP_DIR)
 
-dev-env: $(DEV_IMG) ## Run an ephemeral dev env with Docker
+dev-env: dev-img ## Run an ephemeral dev env with Docker
 	@docker run \
 		-it \
 		--rm \
@@ -20,6 +20,8 @@ dev-env: $(DEV_IMG) ## Run an ephemeral dev env with Docker
 		--mount "type=bind,source=$(shell pwd),target=/asdf-yamllint" \
 		--name "asdf-yamllint-dev" \
 		asdf-yamllint-dev-img
+
+dev-img: $(DEV_IMG) ## Build a dev env image with Docker
 
 format: $(ASDF) ## Format the source code
 	@shfmt --simplify --write $(ALL_SCRIPTS)
@@ -93,7 +95,8 @@ test-list-all: ## Test run the list-all script
 verify: format-check lint ## Verify project is in a good state
 
 .PHONY: \
-	clean default dev-env help release verify \
+	clean default help release verify \
+	dev-env dev-img \
 	format format-check \
 	lint lint-ci lint-docker lint-sh \
 	test-download test-install test-installation test-list-all
