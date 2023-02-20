@@ -7,7 +7,7 @@ RUN apk add --no-cache \
 	# asdf prerequisites
 	bash curl git \
 	# project prerequisites
-	jq make python3
+	jq make python3 py3-pip
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
