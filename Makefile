@@ -2,6 +2,7 @@ TMP_DIR:=.tmp
 BIN_DIR:=bin
 
 ASDF:=$(TMP_DIR)/.asdf
+DEV_IMG:=$(TMP_DIR)/.dev-img
 
 ALL_SCRIPTS:=./$(BIN_DIR)/* ./lib/*
 
@@ -10,6 +11,17 @@ default: help
 clean: ## Clean the repository
 	@git clean -fx \
 		$(TMP_DIR)
+
+dev-env: dev-img ## Run an ephemeral dev env with Docker
+	@docker run \
+		-it \
+		--rm \
+		--workdir "/asdf-yamllint" \
+		--mount "type=bind,source=$(shell pwd),target=/asdf-yamllint" \
+		--name "asdf-yamllint-dev" \
+		asdf-yamllint-dev-img
+
+dev-img: $(DEV_IMG) ## Build a dev env image with Docker
 
 format: $(ASDF) ## Format the source code
 	@shfmt --simplify --write $(ALL_SCRIPTS)
@@ -24,10 +36,13 @@ help: ## Show this help message
 		printf "  \033[36m%-30s\033[0m %s\n", $$1, $$NF \
 	}' $(MAKEFILE_LIST)
 
-lint: lint-ci lint-sh ## Run lint-*
+lint: lint-ci lint-docker lint-sh ## Run lint-*
 
 lint-ci: $(ASDF) ## Lint CI workflow files
 	@actionlint
+
+lint-docker: $(ASDF) ## Lint the Dockerfile
+	@hadolint Dockerfile
 
 lint-sh: $(ASDF) ## Lint .sh files
 	@shellcheck $(ALL_SCRIPTS)
@@ -81,8 +96,9 @@ verify: format-check lint ## Verify project is in a good state
 
 .PHONY: \
 	clean default help release verify \
+	dev-env dev-img \
 	format format-check \
-	lint lint-ci lint-sh \
+	lint lint-ci lint-docker lint-sh \
 	test-download test-install test-installation test-list-all
 
 $(TMP_DIR):
@@ -90,3 +106,8 @@ $(TMP_DIR):
 $(ASDF): .tool-versions | $(TMP_DIR)
 	@asdf install
 	@touch $(ASDF)
+$(DEV_IMG): Dockerfile | $(TMP_DIR)
+	@docker build \
+		--tag asdf-yamllint-dev-img \
+		.
+	@touch $(DEV_IMG)
