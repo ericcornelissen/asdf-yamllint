@@ -18,6 +18,7 @@ jobs:
       matrix:
         tool:
           - actionlint
+          - hadolint
           - shellcheck
           - shfmt
     steps:
