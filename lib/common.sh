@@ -70,7 +70,7 @@ download_version() {
 	local -r download_path="$2"
 
 	local -r version_json="$(curl --silent "${base_url}/${version}/json")"
-	local -r download_json="$(echo "${version_json}" | jq -r '.urls[1]')"
+	local -r download_json="$(echo "${version_json}" | jq -r '.urls[] | select(.packagetype == "sdist")')"
 	local -r download_url="$(echo "${download_json}" | jq -r '.url')"
 	local -r tar_checksum="$(echo "${download_json}" | jq -r '.digests.sha256')"
 
