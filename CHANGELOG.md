@@ -4,6 +4,7 @@ All notable changes to _asdf-yamllint_ will be documented in this file.
 
 ## Changes
 
+- (2023-04-22) Fix installation error due to `[dev]` directive.
 - (2023-03-24) Fix `null` error when downloading certain yamllint versions.
 - (2023-02-20) Improve checksum verification system compatibility.
 - (2023-01-21) Remove prerequisite checks.
