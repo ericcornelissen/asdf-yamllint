@@ -112,6 +112,7 @@ install_version() {
 
 	(
 		cd "${install_path}/yamllint-${version}"
+		sed -i -e '/^\[/d' yamllint.egg-info/requires.txt
 		${python_command} \
 			-m pip install \
 			--quiet \

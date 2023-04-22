@@ -87,6 +87,12 @@ else
 endif
 
 test-installation: ## Test the installation
+	@echo 'INSTALLED VERSION:'
+	@echo '------------------'
+	@$(TMP_DIR)/install/bin/yamllint --version
+	@echo
+	@echo 'HELP TEXT:'
+	@echo '----------'
 	@$(TMP_DIR)/install/bin/yamllint --help
 
 test-list-all: ## Test run the list-all script
