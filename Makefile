@@ -48,7 +48,10 @@ lint-sh: $(ASDF) ## Lint .sh files
 	@shellcheck $(ALL_SCRIPTS)
 
 release: ## Release a new version
-ifeq "$v" ""
+ifneq "$(shell git branch --show-current)" "main"
+	@echo 'refusing to release, not on main branch'
+	@echo 'first run: "git switch main"'
+else ifeq "$v" ""
 	@echo 'usage: "make release v=1.0.1"'
 else
 	@git tag "v$v"
