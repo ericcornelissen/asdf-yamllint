@@ -6,12 +6,15 @@ DEV_IMG:=$(TMP_DIR)/.dev-img
 
 ALL_SCRIPTS:=./$(BIN_DIR)/* ./lib/*
 
+.PHONY: default
 default: help
 
+.PHONY: clean
 clean: ## Clean the repository
 	@git clean -fx \
 		$(TMP_DIR)
 
+.PHONY: dev-env dev-img
 dev-env: dev-img ## Run an ephemeral dev env with Docker
 	@docker run \
 		-it \
@@ -23,12 +26,14 @@ dev-env: dev-img ## Run an ephemeral dev env with Docker
 
 dev-img: $(DEV_IMG) ## Build a dev env image with Docker
 
+.PHONY: format format-check
 format: $(ASDF) ## Format the source code
 	@shfmt --simplify --write $(ALL_SCRIPTS)
 
 format-check: $(ASDF) ## Check the source code formatting
 	@shfmt --diff $(ALL_SCRIPTS)
 
+.PHONY: help
 help: ## Show this help message
 	@printf "Usage: make <command>\n\n"
 	@printf "Commands:\n"
@@ -36,6 +41,7 @@ help: ## Show this help message
 		printf "  \033[36m%-30s\033[0m %s\n", $$1, $$NF \
 	}' $(MAKEFILE_LIST)
 
+.PHONY: lint lint-ci lint-docker lint-sh
 lint: lint-ci lint-docker lint-sh ## Run lint-*
 
 lint-ci: $(ASDF) ## Lint CI workflow files
@@ -47,6 +53,7 @@ lint-docker: $(ASDF) ## Lint the Dockerfile
 lint-sh: $(ASDF) ## Lint .sh files
 	@shellcheck $(ALL_SCRIPTS)
 
+.PHONY: release
 release: ## Release a new version
 ifeq "$v" ""
 	@echo 'usage: "make release v=1.0.1"'
@@ -55,6 +62,7 @@ else
 	@git push origin "v$v"
 endif
 
+.PHONY: test-download test-install test-installation test-list-all
 test-download: | $(TMP_DIR) ## Test run the download script
 ifeq "$(version)" ""
 	@echo 'usage: "make test-download version=1.29.0"'
@@ -98,14 +106,8 @@ test-installation: ## Test the installation
 test-list-all: ## Test run the list-all script
 	@./$(BIN_DIR)/list-all
 
+.PHONY: verify
 verify: format-check lint ## Verify project is in a good state
-
-.PHONY: \
-	clean default help release verify \
-	dev-env dev-img \
-	format format-check \
-	lint lint-ci lint-docker lint-sh \
-	test-download test-install test-installation test-list-all
 
 $(TMP_DIR):
 	@mkdir $(TMP_DIR)
