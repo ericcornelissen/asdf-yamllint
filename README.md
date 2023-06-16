@@ -31,3 +31,9 @@ To be able to use this plugin you need at least the following:
 - Either `shasum` or `sha256sum`
 - Unix utilities: `awk`, `bash`, `command`, `cp`, `curl`, `dirname`, `jq`,
   `mkdir`, `rm`, `sed`, `sort`, and `tar`
+
+---
+
+_Content licensed under [CC BY 4.0]._
+
+[cc by 4.0]: https://creativecommons.org/licenses/by/4.0/
