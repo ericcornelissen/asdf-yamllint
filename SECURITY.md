@@ -1,7 +1,7 @@
 # Security Policy
 
-The maintainers of the _asdf-yamllint_ take security issues seriously. We
-appreciate your efforts to responsibly disclose your findings. Due to the
+The maintainers of the _asdf-yamllint_ project take security issues seriously.
+We appreciate your efforts to responsibly disclose your findings. Due to the
 non-funded and open-source nature of the project, we take a best-efforts
 approach when it comes to engaging with security reports.
 
