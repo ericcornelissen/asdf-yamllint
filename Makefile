@@ -117,7 +117,7 @@ $(TMP_DIR):
 $(ASDF): .tool-versions | $(TMP_DIR)
 	@asdf install
 	@touch $(ASDF)
-$(DEV_IMG): Dockerfile | $(TMP_DIR)
+$(DEV_IMG): .tool-versions Dockerfile | $(TMP_DIR)
 	@docker build \
 		--tag asdf-yamllint-dev-img \
 		.
