@@ -65,7 +65,7 @@ else
 	@git push origin "v$v"
 endif
 
-.PHONY: test-download test-install test-installation test-list-all
+.PHONY: test-download test-help test-install test-installation test-list-all
 test-download: | $(TMP_DIR) ## Test run the download script
 ifeq "$(version)" ""
 	@echo 'usage: "make test-download version=1.29.0"'
@@ -80,6 +80,16 @@ else
 		./$(BIN_DIR)/download \
 	)
 endif
+
+test-help: ## Test the help scripts
+	@echo "OVERVIEW"
+	@./$(BIN_DIR)/help.overview
+	@echo
+	@echo "DEPENDENCIES"
+	@./$(BIN_DIR)/help.deps
+	@echo
+	@echo "LINKS"
+	@./$(BIN_DIR)/help.links
 
 test-install: | $(TMP_DIR) ## Test run the install script
 ifeq "$(version)" ""

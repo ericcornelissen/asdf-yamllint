@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+echo "awk
+bash
+command
+cp
+curl
+dirname
+jq
+mkdir
+python / python3
+rm
+sed
+shasum / sha256sum
+sort
+tar"

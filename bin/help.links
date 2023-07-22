@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+echo "Git repository : https://github.com/adrienverge/yamllint
+Documentation  : https://yamllint.readthedocs.io"
