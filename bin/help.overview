@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+echo "This plugin provides access to yamllint - a linter for YAML files.
+
+yamllint is 'GNU General Public License v3.0' licensed software."
