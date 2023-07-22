@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
 
 echo "This plugin provides access to yamllint - a linter for YAML files.
 
