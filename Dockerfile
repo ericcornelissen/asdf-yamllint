@@ -1,7 +1,7 @@
 # Check out Docker at: https://www.docker.com/
 # NOTE: this image is intended for development purposes only.
 
-FROM alpine:3.18.2
+FROM alpine:3.18.3
 
 RUN apk add --no-cache \
 	# asdf prerequisites
