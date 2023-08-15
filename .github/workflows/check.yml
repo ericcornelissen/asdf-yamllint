@@ -57,7 +57,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - name: Run ${{ matrix.command }}
-        run: make test-${{ matrix.command }} version=1.29.0
+        env:
+          COMMAND: ${{ matrix.command }}
+        run: make "test-$COMMAND" version=1.29.0
   test-e2e:
     name: Test end-to-end (${{ matrix.name }})
     runs-on: ${{ matrix.os }}
