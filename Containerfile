@@ -1,5 +1,6 @@
-# Check out Docker at: https://www.docker.com/
-# NOTE: this image is intended for development purposes only.
+# Defines a development environment container image. Can be used with:
+# - Docker: https://www.docker.com/
+# - Podman: https://podman.io/
 
 FROM alpine:3.18.4
 
