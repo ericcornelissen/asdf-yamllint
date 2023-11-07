@@ -10,11 +10,12 @@ RUN apk add --no-cache \
 	# project prerequisites
 	jq make python3 py3-pip
 
+ENV ASDF_DIR="/.asdf"
+
 WORKDIR /setup
 COPY .tool-versions .
 
-ENV ASDF_DIR="/.asdf"
-RUN git clone https://github.com/asdf-vm/asdf.git /.asdf --branch v0.11.1 \
+RUN git clone https://github.com/asdf-vm/asdf.git /.asdf --branch v0.13.1 \
 	&& echo '. "/.asdf/asdf.sh"' > ~/.bashrc \
 	&& . "/.asdf/asdf.sh" \
 	&& asdf plugin add actionlint \
