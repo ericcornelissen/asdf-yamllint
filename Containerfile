@@ -10,14 +10,13 @@ RUN apk add --no-cache \
 	# project prerequisites
 	jq make python3 py3-pip
 
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
 WORKDIR /setup
 COPY .tool-versions .
 
-RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.1 \
-	&& echo '. "$HOME/.asdf/asdf.sh"' > ~/.bashrc \
-	&& . "$HOME/.asdf/asdf.sh" \
+ENV ASDF_DIR="/.asdf"
+RUN git clone https://github.com/asdf-vm/asdf.git /.asdf --branch v0.11.1 \
+	&& echo '. "/.asdf/asdf.sh"' > ~/.bashrc \
+	&& . "/.asdf/asdf.sh" \
 	&& asdf plugin add actionlint \
 	&& asdf plugin add hadolint \
 	&& asdf plugin add shellcheck \
