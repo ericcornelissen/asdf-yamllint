@@ -1,8 +1,7 @@
 # SPDX-License-Identifier: MIT
 
-# Defines a development environment container image. Can be used with:
-# - Docker: https://www.docker.com/
-# - Podman: https://podman.io/
+# Check out Docker at: https://www.docker.com/
+# Check out Podman at: https://podman.io/
 
 FROM alpine:3.18.4
 
