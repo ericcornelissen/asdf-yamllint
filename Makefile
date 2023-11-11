@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 CONTAINER_ENGINE?=docker
 
 TMP_DIR:=.tmp

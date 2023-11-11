@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 # Defines a development environment container image. Can be used with:
 # - Docker: https://www.docker.com/
 # - Podman: https://podman.io/
