@@ -8,54 +8,32 @@ permissions: read-all
 
 jobs:
   tooling:
-    name: Tool update ${{ matrix.tool }}
+    name: Update tooling
     runs-on: ubuntu-22.04
     permissions:
       contents: write # To push a commit
       pull-requests: write # To open a Pull Request
-    strategy:
-      fail-fast: false
-      matrix:
-        tool:
-          - actionlint
-          - hadolint
-          - shellcheck
-          - shfmt
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
-      - name: Install tooling
-        uses: asdf-vm/actions/install@6a442392015fbbdd8b48696d41e0051b2698b2e4 # v2.2.0
       - name: Create token to create Pull Request
-        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1.8.0
-        id: release-token
+        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
+        id: automation-token
         with:
-          app_id: ${{ secrets.RELEASE_APP_ID }}
-          private_key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
-      - name: Get latest version
-        id: version
-        run: |
-          LATEST_VERSION="$(asdf latest '${{ matrix.tool }}')"
-          echo "latest=$LATEST_VERSION" >> "$GITHUB_OUTPUT"
-      - name: Install new version
-        run: |
-          asdf install '${{ matrix.tool }}' '${{ steps.version.outputs.latest }}'
-      - name: Apply latest version to .tool-versions
-        run: |
-          asdf local '${{ matrix.tool }}' '${{ steps.version.outputs.latest }}'
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38 # v5.0.2
+          app_id: ${{ secrets.AUTOMATION_ID }}
+          private_key: ${{ secrets.AUTOMATION_PRIVATE_KEY }}
+      - name: Update tooling
+        uses: ericcornelissen/tool-versions-update-action/pr@4717f7d99f8721a9cd04a55d79876ea59b0c3f2b # v1.0.0
         with:
-          token: ${{ steps.release-token.outputs.token }}
-          title: Update ${{ matrix.tool }} to v${{ steps.version.outputs.latest }}
-          body: |
-            _This Pull Request was created automatically_
+          assignees: ericcornelissen
+          commit-message: Bump {{updated-tools}} from {{updated-old-versions}} to {{updated-new-versions}}
+          labels: dependencies
+          max: 1
+          pr-body: |
+            Bumps {{updated-tools}} from {{updated-old-versions}} to {{updated-new-versions}}.
 
             ---
 
-            Bump ${{ matrix.tool }} to v${{ steps.version.outputs.latest }}
-          branch: tooling-${{ matrix.tool }}-${{ steps.version.outputs.latest }}
-          labels: dependencies
-          commit-message: Update ${{ matrix.tool }} to ${{ steps.version.outputs.latest }}
-          add-paths: |
-            .tool-versions
+            _This Pull Request was created using the [tool-versions-update-action]_
+
+            [tool-versions-update-action]: https://github.com/ericcornelissen/tool-versions-update-action
+          pr-title: Bump {{updated-tools}} from {{updated-old-versions}} to {{updated-new-versions}}
+          token: ${{ steps.automation-token.outputs.token }}

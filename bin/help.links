@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+
+echo "Git repository : https://github.com/adrienverge/yamllint
+Documentation  : https://yamllint.readthedocs.io"

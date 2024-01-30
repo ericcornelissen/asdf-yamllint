@@ -18,5 +18,5 @@ indent_size=unset
 indent_style=space
 indent_size=2
 
-[{Dockerfile,Makefile}]
+[{Containerfile,Makefile}]
 indent_style=tab

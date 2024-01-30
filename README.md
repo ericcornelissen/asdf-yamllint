@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+
 # `asdf-yamllint`
 
 An [asdf] plugin for [yamllint].
@@ -32,8 +34,11 @@ To be able to use this plugin you need at least the following:
 - Unix utilities: `awk`, `bash`, `command`, `cp`, `curl`, `dirname`, `jq`,
   `mkdir`, `rm`, `sed`, `sort`, and `tar`
 
----
+## License
 
-_Content licensed under [CC BY 4.0]._
+This source code is available under the MIT license, see [LICENSE] for the full
+license text. The documentation contents are available under the [CC BY 4.0]
+license.
 
 [cc by 4.0]: https://creativecommons.org/licenses/by/4.0/
+[license]: ./LICENSE

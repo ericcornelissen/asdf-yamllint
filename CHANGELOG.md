@@ -1,9 +1,12 @@
+<!-- SPDX-License-Identifier: CC0-1.0 -->
+
 # Changelog
 
 All notable changes to _asdf-yamllint_ will be documented in this file.
 
 ## Changes
 
+- (2023-07-22) Add support for `asdf help yamllint`.
 - (2023-04-22) Document prerequisites.
 - (2023-04-22) Fix installation error due to `[dev]` directive.
 - (2023-03-24) Fix `null` error when downloading certain yamllint versions.

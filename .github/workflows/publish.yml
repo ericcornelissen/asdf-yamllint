@@ -14,9 +14,9 @@ jobs:
       contents: write # To create a GitHub Release
     steps:
       - name: Checkout repository
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
       - name: Get version
-        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1
+        uses: actions/github-script@e69ef5462fd455e02edcaf4dd7708eda96b9eda0 # v7.0.0
         id: version
         with:
           result-encoding: string
@@ -25,7 +25,7 @@ jobs:
             const tag = ref.replace(/^refs\/tags\//, "")
             return tag
       - name: Create GitHub Release
-        uses: ncipollo/release-action@a2e71bdd4e7dab70ca26a852f29600c98b33153e # v1.12.0
+        uses: ncipollo/release-action@6c75be85e571768fa31b40abf38de58ba0397db5 # v1.13.0
         with:
           name: Release ${{ steps.version.outputs.result }}
           body: Release ${{ steps.version.outputs.result }}

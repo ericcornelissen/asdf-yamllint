@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: MIT-0
+
+CONTAINER_ENGINE?=docker
+
 TMP_DIR:=.tmp
 BIN_DIR:=bin
 
@@ -15,8 +19,8 @@ clean: ## Clean the repository
 		$(TMP_DIR)
 
 .PHONY: dev-env dev-img
-dev-env: dev-img ## Run an ephemeral dev env with Docker
-	@docker run \
+dev-env: dev-img ## Run an ephemeral development environment container
+	@$(CONTAINER_ENGINE) run \
 		-it \
 		--rm \
 		--workdir "/asdf-yamllint" \
@@ -24,7 +28,7 @@ dev-env: dev-img ## Run an ephemeral dev env with Docker
 		--name "asdf-yamllint-dev" \
 		asdf-yamllint-dev-img
 
-dev-img: $(DEV_IMG) ## Build a dev env image with Docker
+dev-img: $(DEV_IMG) ## Build a development environment image
 
 .PHONY: format format-check
 format: $(ASDF) ## Format the source code
@@ -41,14 +45,14 @@ help: ## Show this help message
 		printf "  \033[36m%-30s\033[0m %s\n", $$1, $$NF \
 	}' $(MAKEFILE_LIST)
 
-.PHONY: lint lint-ci lint-docker lint-sh
-lint: lint-ci lint-docker lint-sh ## Run lint-*
+.PHONY: lint lint-ci lint-container lint-sh
+lint: lint-ci lint-container lint-sh ## Run lint-*
 
 lint-ci: $(ASDF) ## Lint CI workflow files
 	@actionlint
 
-lint-docker: $(ASDF) ## Lint the Dockerfile
-	@hadolint Dockerfile
+lint-container: $(ASDF) ## Lint the Containerfile
+	@hadolint Containerfile
 
 lint-sh: $(ASDF) ## Lint .sh files
 	@shellcheck $(ALL_SCRIPTS)
@@ -65,7 +69,7 @@ else
 	@git push origin "v$v"
 endif
 
-.PHONY: test-download test-install test-installation test-list-all
+.PHONY: test-download test-help test-install test-installation test-list-all
 test-download: | $(TMP_DIR) ## Test run the download script
 ifeq "$(version)" ""
 	@echo 'usage: "make test-download version=1.29.0"'
@@ -80,6 +84,16 @@ else
 		./$(BIN_DIR)/download \
 	)
 endif
+
+test-help: ## Test the help scripts
+	@echo "OVERVIEW"
+	@./$(BIN_DIR)/help.overview
+	@echo
+	@echo "DEPENDENCIES"
+	@./$(BIN_DIR)/help.deps
+	@echo
+	@echo "LINKS"
+	@./$(BIN_DIR)/help.links
 
 test-install: | $(TMP_DIR) ## Test run the install script
 ifeq "$(version)" ""
@@ -117,8 +131,9 @@ $(TMP_DIR):
 $(ASDF): .tool-versions | $(TMP_DIR)
 	@asdf install
 	@touch $(ASDF)
-$(DEV_IMG): Dockerfile | $(TMP_DIR)
-	@docker build \
+$(DEV_IMG): .tool-versions Containerfile | $(TMP_DIR)
+	@$(CONTAINER_ENGINE) build \
 		--tag asdf-yamllint-dev-img \
+		--file Containerfile \
 		.
 	@touch $(DEV_IMG)

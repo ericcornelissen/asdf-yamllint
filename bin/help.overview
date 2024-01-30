@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT
+
+echo "This plugin provides access to yamllint - a linter for YAML files.
+
+yamllint is 'GNU General Public License v3.0' licensed software."
