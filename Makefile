@@ -10,6 +10,8 @@ DEV_IMG:=$(TMP_DIR)/.dev-img
 
 ALL_SCRIPTS:=./$(BIN_DIR)/* ./lib/*
 
+SHELLCHECK_OPTS:='--enable=avoid-nullary-conditions --enable=deprecate-which --enable=quote-safe-variables --enable=require-variable-braces'
+
 .PHONY: default
 default: help
 
@@ -49,13 +51,16 @@ help: ## Show this help message
 lint: lint-ci lint-container lint-sh ## Run lint-*
 
 lint-ci: $(ASDF) ## Lint CI workflow files
-	@actionlint
+	@SHELLCHECK_OPTS=$(SHELLCHECK_OPTS) \
+		actionlint
 
 lint-container: $(ASDF) ## Lint the Containerfile
 	@hadolint Containerfile
 
 lint-sh: $(ASDF) ## Lint .sh files
-	@shellcheck $(ALL_SCRIPTS)
+	@SHELLCHECK_OPTS=$(SHELLCHECK_OPTS) \
+		shellcheck \
+		$(ALL_SCRIPTS)
 
 .PHONY: release
 release: ## Release a new version
