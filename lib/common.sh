@@ -102,17 +102,25 @@ install_version() {
 
 	local -r python_command="$(_get_python_command)"
 
+	local -r src_dir_name="yamllint-${version}"
+
 	local -r bin_install_path="${install_path}/bin"
 	local -r bin_path="${bin_install_path}/yamllint"
+	local -r src_path="${install_path}/${src_dir_name}"
+	local -r venv_path="${src_path}/__venv__"
 
 	mkdir -p "${bin_install_path}"
 
 	if [ -n "${download_path}" ]; then
-		cp -r "${download_path}/yamllint-${version}" "${install_path}"
+		cp -r "${download_path}/${src_dir_name}" "${install_path}"
 	fi
 
+	${python_command} -m venv "${venv_path}"
+	# shellcheck disable=SC1091
+	source "${venv_path}/bin/activate"
+
 	(
-		cd "${install_path}/yamllint-${version}"
+		cd "${src_path}"
 		sed -i -e '/^\[/d' yamllint.egg-info/requires.txt
 		${python_command} \
 			-m pip install \
@@ -120,11 +128,15 @@ install_version() {
 			--requirement yamllint.egg-info/requires.txt
 	)
 
+	deactivate
+
 	{
 		echo '#!/usr/bin/env bash'
 		echo ''
+		echo "source '${venv_path}/bin/activate'"
 		echo "PYTHONPATH=\"\${PYTHONPATH}:${install_path}/yamllint-${version}\" \\"
 		echo "${python_command} '${install_path}/yamllint-${version}/yamllint/__main__.py' \"\$@\""
+		echo "deactivate"
 	} >>"${bin_path}"
 	chmod +x "${bin_path}"
 }
