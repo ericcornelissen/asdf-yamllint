@@ -70,7 +70,7 @@ jobs:
       matrix:
         include:
           - name: MacOS
-            os: macos-14
+            os: macos-13
           - name: Ubuntu
             os: ubuntu-22.04
     steps:
