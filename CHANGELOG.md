@@ -6,6 +6,7 @@ All notable changes to _asdf-yamllint_ will be documented in this file.
 
 ## Changes
 
+- (2024-04-04) Use Python venv to install and run `yamllint`.
 - (2023-07-22) Add support for `asdf help yamllint`.
 - (2023-04-22) Document prerequisites.
 - (2023-04-22) Fix installation error due to `[dev]` directive.
