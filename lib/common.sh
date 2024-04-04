@@ -133,7 +133,7 @@ install_version() {
 	{
 		echo '#!/usr/bin/env bash'
 		echo ''
-		echo "source ${venv_path}/bin/activate"
+		echo "source '${venv_path}/bin/activate'"
 		echo "PYTHONPATH=\"\${PYTHONPATH}:${install_path}/yamllint-${version}\" \\"
 		echo "${python_command} '${install_path}/yamllint-${version}/yamllint/__main__.py' \"\$@\""
 		echo "deactivate"
