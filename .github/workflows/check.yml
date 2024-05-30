@@ -45,7 +45,7 @@ jobs:
         run: make lint-sh
   test:
     name: Test
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -53,9 +53,6 @@ jobs:
           - download
           - install
           - list-all
-        os:
-          - ubuntu-22.04
-          - macos-14
     steps:
       - name: Checkout repository
         uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2

@@ -41,10 +41,8 @@ _validate_checksum() {
 	# available on the current system.
 	local shasum_command='shasum -q -a 256'
 	if ! command -v shasum &>/dev/null; then
-		shasum_command='sha256sum -s'
+		shasum_command='sha256sum --quiet'
 	fi
-
-	echo "[DEBUG] using: ${shasum_command}"
 
 	echo "${expected_checksum}  ${file}" >"${checksum_file}"
 	${shasum_command} -c "${checksum_file}"
