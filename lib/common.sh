@@ -44,6 +44,8 @@ _validate_checksum() {
 		shasum_command='sha256sum -s'
 	fi
 
+	echo "[DEBUG] using: ${shasum_command}"
+
 	echo "${expected_checksum}  ${file}" >"${checksum_file}"
 	${shasum_command} -c "${checksum_file}"
 
