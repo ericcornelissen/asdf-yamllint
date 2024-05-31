@@ -7,7 +7,6 @@ command
 cp
 curl
 dirname
-grep
 jq
 mkdir
 python / python3
