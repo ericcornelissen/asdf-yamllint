@@ -39,13 +39,13 @@ _validate_checksum() {
 	# Different systems have different programs for computing SHA checksums. To
 	# broaden support, multiple programs are considered. We use whichever one is
 	# available on the current system.
-	local shasum_command='shasum -q -a 256'
+	local shasum_command='shasum -a 256'
 	if ! command -v shasum &>/dev/null; then
-		shasum_command='sha256sum -s'
+		shasum_command='sha256sum'
 	fi
 
 	echo "${expected_checksum}  ${file}" >"${checksum_file}"
-	${shasum_command} -c "${checksum_file}"
+	${shasum_command} -c "${checksum_file}" 1>/dev/null
 
 	rm -f "${checksum_file}"
 }
