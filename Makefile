@@ -55,7 +55,7 @@ lint-ci: $(ASDF) ## Lint CI workflow files
 		actionlint
 
 lint-container: $(ASDF) ## Lint the Containerfile
-	@hadolint Containerfile
+	@hadolint Containerfile.dev
 
 lint-sh: $(ASDF) ## Lint .sh files
 	@SHELLCHECK_OPTS=$(SHELLCHECK_OPTS) \
@@ -136,9 +136,9 @@ $(TMP_DIR):
 $(ASDF): .tool-versions | $(TMP_DIR)
 	@asdf install
 	@touch $(ASDF)
-$(DEV_IMG): .tool-versions Containerfile | $(TMP_DIR)
+$(DEV_IMG): .tool-versions Containerfile.dev | $(TMP_DIR)
 	@$(CONTAINER_ENGINE) build \
 		--tag asdf-yamllint-dev-img \
-		--file Containerfile \
+		--file Containerfile.dev \
 		.
 	@touch $(DEV_IMG)
