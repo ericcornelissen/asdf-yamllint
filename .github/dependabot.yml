@@ -8,7 +8,5 @@ updates:
     schedule:
       interval: daily
       time: "05:00"
-    assignees:
-      - ericcornelissen
     labels:
       - dependencies
