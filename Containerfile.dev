@@ -9,7 +9,10 @@ RUN apk add --no-cache \
 	# asdf prerequisites
 	bash curl git \
 	# project prerequisites
-	jq make python3 py3-pip
+	jq make python3 py3-pip \
+	&& \
+	# configure git to operate in the mounted working directory
+	git config --global --add safe.directory /asdf-yamllint
 
 ENV ASDF_DIR="/.asdf"
 
