@@ -128,6 +128,16 @@ test-installation: ## Test the installation
 test-list-all: ## Test run the list-all script
 	@./$(BIN_DIR)/list-all
 
+test-uninstall: | $(TMP_DIR) ## Test run the uninstall script
+ifeq "$(version)" ""
+	@echo 'usage: "make test-uninstall version=1.29.0"'
+else
+	@( \
+		ASDF_INSTALL_PATH="${TMP_DIR}/install/yamllint-$(version)" \
+		./$(BIN_DIR)/uninstall \
+	)
+endif
+
 .PHONY: verify
 verify: format-check lint ## Verify project is in a good state
 
