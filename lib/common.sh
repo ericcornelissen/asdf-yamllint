@@ -125,6 +125,7 @@ install_version() {
 		${python_command} \
 			-m pip install \
 			--quiet \
+			--disable-pip-version-check \
 			--requirement yamllint.egg-info/requires.txt
 	)
 
