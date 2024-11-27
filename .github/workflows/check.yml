@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+        with:
+          persist-credentials: false
       - name: Build development image
         run: make dev-img
   format:
@@ -22,6 +24,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+        with:
+          persist-credentials: false
       - name: Install tooling
         uses: asdf-vm/actions/install@4f8f7939dd917fc656bb7c3575969a5988c28364 # v3.0.0
       - name: Check formatting
@@ -32,6 +36,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+        with:
+          persist-credentials: false
       - name: Install tooling
         uses: asdf-vm/actions/install@4f8f7939dd917fc656bb7c3575969a5988c28364 # v3.0.0
       - name: Lint CI workflows
@@ -56,6 +62,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+        with:
+          persist-credentials: false
       - name: Run ${{ matrix.command }}
         env:
           COMMAND: ${{ matrix.command }}
