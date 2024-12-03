@@ -58,6 +58,7 @@ jobs:
         command:
           - download
           - install
+          - latest-stable
           - list-all
     steps:
       - name: Checkout repository

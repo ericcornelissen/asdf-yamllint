@@ -74,8 +74,8 @@ else
 	@git push origin "v$v"
 endif
 
-.PHONY: test-download test-help test-install test-installation test-list-all
-test-download: | $(TMP_DIR) ## Test run the download script
+.PHONY: test-download test-help test-install test-installation test-latest-stable test-list-all
+test-download: | $(TMP_DIR) ## Test the download script
 ifeq "$(version)" ""
 	@echo 'usage: "make test-download version=1.29.0"'
 else
@@ -100,7 +100,7 @@ test-help: ## Test the help scripts
 	@echo "LINKS"
 	@./$(BIN_DIR)/help.links
 
-test-install: | $(TMP_DIR) ## Test run the install script
+test-install: | $(TMP_DIR) ## Test the install script
 ifeq "$(version)" ""
 	@echo 'usage: "make test-install version=1.29.0"'
 else
@@ -125,7 +125,10 @@ test-installation: ## Test the installation
 	@echo '----------'
 	@$(TMP_DIR)/install/bin/yamllint --help
 
-test-list-all: ## Test run the list-all script
+test-latest-stable: ## Test the latest-stable scripts
+	@./$(BIN_DIR)/latest-stable
+
+test-list-all: ## Test the list-all script
 	@./$(BIN_DIR)/list-all
 
 .PHONY: verify

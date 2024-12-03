@@ -60,6 +60,11 @@ check_env_var() {
 	fi
 }
 
+latest_version() {
+	curl --silent "${base_url}/json" |
+		jq --raw-output '.info.version'
+}
+
 list_versions() {
 	curl --silent "${base_url}/json" |
 		jq --raw-output '.releases | keys[]' |
