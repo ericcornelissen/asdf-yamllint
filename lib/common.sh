@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: MIT
 
-set -eo pipefail
-
 base_url="https://pypi.org/pypi/yamllint"
 
 exit_code_missing_env_var=1
@@ -125,14 +123,14 @@ install_version() {
 	source "${venv_path}/bin/activate"
 
 	(
-		cd "${src_path}"
+		cd "${src_path}" || return
 		sed -i -e '/^\[/d' yamllint.egg-info/requires.txt
 		${python_command} \
 			-m pip install \
 			--quiet \
 			--disable-pip-version-check \
 			--requirement yamllint.egg-info/requires.txt
-	)
+	) || return 1
 
 	deactivate
 
