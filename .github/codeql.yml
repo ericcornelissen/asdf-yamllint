@@ -1,0 +1,6 @@
+# Check out CodeQL at: https://codeql.github.com/
+
+name: asdf-yamllint CodeQL config
+
+queries:
+  - uses: security-extended
