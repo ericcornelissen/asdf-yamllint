@@ -8,6 +8,23 @@ on:
 permissions: read-all
 
 jobs:
+  codeql:
+    name: CodeQL (actions)
+    runs-on: ubuntu-24.04
+    permissions:
+      security-events: write # To upload CodeQL results
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+        with:
+          persist-credentials: false
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@d68b2d4edb4189fd2a5366ac14e72027bd4b37dd # v3.28.2
+        with:
+          config-file: ./.github/codeql.yml
+          languages: actions
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@d68b2d4edb4189fd2a5366ac14e72027bd4b37dd # v3.28.2
   dev-env:
     name: Dev env
     runs-on: ubuntu-24.04
