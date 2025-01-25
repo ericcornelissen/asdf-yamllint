@@ -3,6 +3,11 @@
 
 base_url="https://pypi.org/pypi/yamllint"
 
+_error() {
+	local -r msg="$1"
+	echo "Error: ${msg}"
+}
+
 _get_python_command() {
 	# Both `python3` and `python` are names commonly used for the Python 3 binary.
 	# The former is definitely Python 3, but not always used. The latter may be
@@ -32,34 +37,51 @@ _validate_checksum() {
 
 	local -r checksum_file="$(dirname "${file}")/checksum.txt"
 
+	if [[ ! -f ${file} ]]; then
+		_error "'${file}' not found"
+		return 1
+	fi
+
 	# Different systems have different programs for computing SHA checksums. To
 	# broaden support, multiple programs are considered. We use whichever one is
 	# available on the current system.
 	local shasum_command='shasum -a 256'
 	if ! command -v shasum &>/dev/null; then
-		shasum_command='sha256sum'
+		if command -v sha256sum &>/dev/null; then
+			shasum_command='sha256sum'
+		else
+			_error 'neither '"'shasum'"' nor '"'sha256sum'"' is available'
+			return 1
+		fi
 	fi
 
 	echo "${expected_checksum}  ${file}" >"${checksum_file}"
-	${shasum_command} -c "${checksum_file}" 1>/dev/null
 
-	rm -f "${checksum_file}"
+	${shasum_command} -c "${checksum_file}" 1>/dev/null 2>/dev/null || {
+		_error 'computed checksums did NOT match'
+		rm -f "${checksum_file}"
+		return 1
+	}
+
+	return 0
 }
 
 check_env_var() {
 	local -r name="$1"
 
 	if [ -z "${!name}" ]; then
-		echo "Error: missing environment variable '${name}'"
+		_error "missing environment variable '${name}'"
 		return 1
 	fi
+
+	return 0
 }
 
 latest_version() {
 	local -r url="${base_url}/json"
 
 	response=$(curl --silent "${url}") || {
-		echo "Error: could not fetch metadata from ${url}"
+		_error "could not fetch metadata from ${url}"
 		return 1
 	}
 
@@ -81,22 +103,20 @@ latest_version() {
 list_versions() {
 	local -r url="${base_url}/json"
 
-	local response
 	response=$(curl --silent "${base_url}/json") || {
-		echo "Error: could not fetch metadata from ${url}"
+		_error "could not fetch metadata from ${url}"
 		return 1
 	}
 
-	local versions
 	versions=$(echo "${response}" | jq --raw-output '.releases | keys[]') || {
 		echo "${response}"
-		echo 'Error: could not parse metadata from the above response.'
+		_error 'could not parse metadata from the above response.'
 		return 1
 	}
 
 	if [[ -z ${versions} ]]; then
 		echo "${response}"
-		echo 'Error: could not find version information in the above response.'
+		_error 'could not find version information in the above response.'
 		return 1
 	fi
 
