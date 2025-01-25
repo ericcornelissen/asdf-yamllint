@@ -37,7 +37,7 @@ format: $(ASDF) ## Format the source code
 	@shfmt --simplify --write $(ALL_SCRIPTS)
 
 format-check: $(ASDF) ## Check the source code formatting
-	@shfmt --diff $(ALL_SCRIPTS)
+	@shfmt --simplify --diff $(ALL_SCRIPTS)
 
 .PHONY: help
 help: ## Show this help message
