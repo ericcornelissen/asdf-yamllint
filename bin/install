@@ -8,8 +8,8 @@ plugin_dir=$(dirname "$(dirname "${current_script_path}")")
 # shellcheck source=./lib/common.sh
 source "${plugin_dir}/lib/common.sh"
 
-check_env_var "ASDF_INSTALL_PATH" "${ASDF_INSTALL_PATH}"
-check_env_var "ASDF_INSTALL_VERSION" "${ASDF_INSTALL_VERSION}"
+check_env_var "ASDF_INSTALL_PATH"
+check_env_var "ASDF_INSTALL_VERSION"
 
 # Run the download script as a fallback for asdf version 0.7.x as detected by
 # the absence of the (in 0.8.0 introduced) ASDF_DOWNLOAD_PATH variable.

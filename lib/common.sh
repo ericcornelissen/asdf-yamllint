@@ -3,8 +3,6 @@
 
 base_url="https://pypi.org/pypi/yamllint"
 
-exit_code_missing_env_var=1
-
 _get_python_command() {
 	# Both `python3` and `python` are names commonly used for the Python 3 binary.
 	# The former is definitely Python 3, but not always used. The latter may be
@@ -50,23 +48,59 @@ _validate_checksum() {
 
 check_env_var() {
 	local -r name="$1"
-	local -r value="$2"
 
-	if [ -z "${value}" ]; then
-		echo "Missing '${name}'"
-		exit "${exit_code_missing_env_var}"
+	if [ -z "${!name}" ]; then
+		echo "Error: missing environment variable '${name}'"
+		return 1
 	fi
 }
 
 latest_version() {
-	curl --silent "${base_url}/json" |
-		jq --raw-output '.info.version'
+	local -r url="${base_url}/json"
+
+	response=$(curl --silent "${url}") || {
+		echo "Error: could not fetch metadata from ${url}"
+		return 1
+	}
+
+	version=$(echo "${response}" | jq --raw-output '.info.version') || {
+		echo "${response}"
+		echo 'Error: could not parse metadata from the above response.'
+		return 1
+	}
+
+	if [[ -z ${version} || ${version} == "null" ]]; then
+		echo "${response}"
+		echo 'Error: could not find version information in the above response.'
+		return 1
+	fi
+
+	echo "${version}"
 }
 
 list_versions() {
-	curl --silent "${base_url}/json" |
-		jq --raw-output '.releases | keys[]' |
-		_sort_versions
+	local -r url="${base_url}/json"
+
+	local response
+	response=$(curl --silent "${base_url}/json") || {
+		echo "Error: could not fetch metadata from ${url}"
+		return 1
+	}
+
+	local versions
+	versions=$(echo "${response}" | jq --raw-output '.releases | keys[]') || {
+		echo "${response}"
+		echo 'Error: could not parse metadata from the above response.'
+		return 1
+	}
+
+	if [[ -z ${versions} ]]; then
+		echo "${response}"
+		echo 'Error: could not find version information in the above response.'
+		return 1
+	fi
+
+	echo "${versions}" | _sort_versions
 }
 
 download_version() {
