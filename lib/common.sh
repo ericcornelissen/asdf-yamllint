@@ -142,9 +142,10 @@ install_version() {
 		echo "source '${venv_path}/bin/activate'"
 		echo "PYTHONPATH=\"\${PYTHONPATH}:${install_path}/yamllint-${version}\" \\"
 		echo "${python_command} '${install_path}/yamllint-${version}/yamllint/__main__.py' \"\$@\""
-		echo "ret_val=\$?"
+		echo 'ret_val=$?'
 		echo "deactivate"
-		echo "exit \"\${ret_val}\""
+		# shellcheck disable=SC2016
+		echo 'exit "${ret_val}"'
 	} >>"${bin_path}"
 	chmod +x "${bin_path}"
 }
