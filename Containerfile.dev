@@ -3,7 +3,7 @@
 # Check out Docker at: https://www.docker.com/
 # Check out Podman at: https://podman.io/
 
-FROM docker.io/alpine:3.20.1
+FROM docker.io/golang:1.24.0-alpine3.21
 
 RUN apk add --no-cache \
 	# asdf prerequisites
@@ -14,14 +14,13 @@ RUN apk add --no-cache \
 	# configure git to operate in the mounted working directory
 	git config --global --add safe.directory /asdf-yamllint
 
-ENV ASDF_DIR="/.asdf"
+ENV ASDF_DATA_DIR="/.asdf"
 
 WORKDIR /setup
 COPY .tool-versions .
 
-RUN git clone https://github.com/asdf-vm/asdf.git /.asdf --branch v0.14.0 \
-	&& echo '. "/.asdf/asdf.sh"' > ~/.bashrc \
-	&& . "/.asdf/asdf.sh" \
+RUN go install github.com/asdf-vm/asdf/cmd/asdf@v0.16.2 \
+	&& echo 'export PATH="/.asdf/shims:$''PATH"' > ~/.bashrc \
 	&& asdf plugin add actionlint \
 	&& asdf plugin add hadolint \
 	&& asdf plugin add shellcheck \
