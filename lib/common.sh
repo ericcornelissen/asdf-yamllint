@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: MIT
 
-set -eo pipefail
-
 base_url="https://pypi.org/pypi/yamllint"
 
-exit_code_missing_env_var=1
+_error() {
+	local -r msg="$1"
+	echo "Error: ${msg}"
+}
 
 _get_python_command() {
 	# Both `python3` and `python` are names commonly used for the Python 3 binary.
@@ -36,39 +37,90 @@ _validate_checksum() {
 
 	local -r checksum_file="$(dirname "${file}")/checksum.txt"
 
+	if [[ ! -f ${file} ]]; then
+		_error "'${file}' not found"
+		return 1
+	fi
+
 	# Different systems have different programs for computing SHA checksums. To
 	# broaden support, multiple programs are considered. We use whichever one is
 	# available on the current system.
 	local shasum_command='shasum -a 256'
 	if ! command -v shasum &>/dev/null; then
-		shasum_command='sha256sum'
+		if command -v sha256sum &>/dev/null; then
+			shasum_command='sha256sum'
+		else
+			_error 'neither '"'shasum'"' nor '"'sha256sum'"' is available'
+			return 1
+		fi
 	fi
 
 	echo "${expected_checksum}  ${file}" >"${checksum_file}"
-	${shasum_command} -c "${checksum_file}" 1>/dev/null
 
-	rm -f "${checksum_file}"
+	${shasum_command} -c "${checksum_file}" 1>/dev/null 2>/dev/null || {
+		_error 'computed checksums did NOT match'
+		rm -f "${checksum_file}"
+		return 1
+	}
+
+	return 0
 }
 
 check_env_var() {
 	local -r name="$1"
-	local -r value="$2"
 
-	if [ -z "${value}" ]; then
-		echo "Missing '${name}'"
-		exit "${exit_code_missing_env_var}"
+	if [ -z "${!name}" ]; then
+		_error "missing environment variable '${name}'"
+		return 1
 	fi
+
+	return 0
 }
 
 latest_version() {
-	curl --silent "${base_url}/json" |
-		jq --raw-output '.info.version'
+	local -r url="${base_url}/json"
+
+	response=$(curl --silent "${url}") || {
+		_error "could not fetch metadata from ${url}"
+		return 1
+	}
+
+	version=$(echo "${response}" | jq --raw-output '.info.version') || {
+		echo "${response}"
+		echo 'Error: could not parse metadata from the above response.'
+		return 1
+	}
+
+	if [[ -z ${version} || ${version} == "null" ]]; then
+		echo "${response}"
+		echo 'Error: could not find version information in the above response.'
+		return 1
+	fi
+
+	echo "${version}"
 }
 
 list_versions() {
-	curl --silent "${base_url}/json" |
-		jq --raw-output '.releases | keys[]' |
-		_sort_versions
+	local -r url="${base_url}/json"
+
+	response=$(curl --silent "${base_url}/json") || {
+		_error "could not fetch metadata from ${url}"
+		return 1
+	}
+
+	versions=$(echo "${response}" | jq --raw-output '.releases | keys[]') || {
+		echo "${response}"
+		_error 'could not parse metadata from the above response.'
+		return 1
+	}
+
+	if [[ -z ${versions} ]]; then
+		echo "${response}"
+		_error 'could not find version information in the above response.'
+		return 1
+	fi
+
+	echo "${versions}" | _sort_versions
 }
 
 download_version() {
@@ -125,14 +177,14 @@ install_version() {
 	source "${venv_path}/bin/activate"
 
 	(
-		cd "${src_path}"
+		cd "${src_path}" || return
 		sed -i -e '/^\[/d' yamllint.egg-info/requires.txt
 		${python_command} \
 			-m pip install \
 			--quiet \
 			--disable-pip-version-check \
 			--requirement yamllint.egg-info/requires.txt
-	)
+	) || return 1
 
 	deactivate
 
