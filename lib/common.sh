@@ -200,13 +200,13 @@ install_version() {
 	fi
 
 	${python_command} -m venv "${venv_path}" || {
-		_error "failed to create virtual environment in ${venv_path}"
+		_error "failed to create a virtual environment in ${venv_path}"
 		return 1
 	}
 
 	# shellcheck disable=SC1091
 	source "${venv_path}/bin/activate" || {
-		_error 'failed to activate virtual environment'
+		_error 'failed to activate the virtual environment'
 		return 1
 	}
 
