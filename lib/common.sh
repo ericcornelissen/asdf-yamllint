@@ -76,7 +76,7 @@ check_env_var() {
 latest_version() {
 	local -r url="${base_url}/json"
 
-	response=$(curl --silent "${url}") || {
+	response=$(curl --fail --silent "${url}") || {
 		_error "could not fetch metadata from ${url}"
 		return 1
 	}
@@ -99,7 +99,7 @@ latest_version() {
 list_versions() {
 	local -r url="${base_url}/json"
 
-	response=$(curl --silent "${url}") || {
+	response=$(curl --fail --silent "${url}") || {
 		_error "could not fetch metadata from ${url}"
 		return 1
 	}
