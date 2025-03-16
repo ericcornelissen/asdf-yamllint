@@ -5,7 +5,7 @@ base_url="https://pypi.org/pypi/yamllint"
 
 _error() {
 	local -r msg="$1"
-	echo "Error: ${msg}"
+	echo "Error: ${msg}" >&2
 }
 
 _get_python_command() {
@@ -62,8 +62,6 @@ _validate_checksum() {
 		rm -f "${checksum_file}"
 		return 1
 	}
-
-	return 0
 }
 
 check_env_var() {
@@ -73,8 +71,6 @@ check_env_var() {
 		_error "missing environment variable '${name}'"
 		return 1
 	fi
-
-	return 0
 }
 
 latest_version() {
@@ -86,14 +82,14 @@ latest_version() {
 	}
 
 	version=$(echo "${response}" | jq --raw-output '.info.version') || {
-		echo "${response}"
-		echo 'Error: could not parse metadata from the above response.'
+		_error "${response}"
+		_error 'could not parse metadata from the above response'
 		return 1
 	}
 
 	if [[ -z ${version} || ${version} == "null" ]]; then
-		echo "${response}"
-		echo 'Error: could not find version information in the above response.'
+		_error "${response}"
+		_error 'could not find version information in the above response'
 		return 1
 	fi
 
@@ -103,20 +99,20 @@ latest_version() {
 list_versions() {
 	local -r url="${base_url}/json"
 
-	response=$(curl --silent "${base_url}/json") || {
+	response=$(curl --silent "${url}") || {
 		_error "could not fetch metadata from ${url}"
 		return 1
 	}
 
 	versions=$(echo "${response}" | jq --raw-output '.releases | keys[]') || {
-		echo "${response}"
-		_error 'could not parse metadata from the above response.'
+		_error "${response}"
+		_error 'could not parse metadata from the above response'
 		return 1
 	}
 
 	if [[ -z ${versions} ]]; then
-		echo "${response}"
-		_error 'could not find version information in the above response.'
+		_error "${response}"
+		_error 'could not find version information in the above response'
 		return 1
 	fi
 
@@ -127,19 +123,42 @@ download_version() {
 	local -r version="$1"
 	local -r download_path="$2"
 
-	local -r version_json="$(curl --silent "${base_url}/${version}/json")"
-	local -r download_json="$(echo "${version_json}" | jq -r '.urls[] | select(.packagetype == "sdist")')"
-	local -r download_url="$(echo "${download_json}" | jq -r '.url')"
-	local -r tar_checksum="$(echo "${download_json}" | jq -r '.digests.sha256')"
+	local -r version_url="${base_url}/${version}/json"
+	response="$(curl --fail --silent "${version_url}")" || {
+		_error "could not fetch metadata from ${version_url}"
+		return 1
+	}
+	metadata=$(echo "${response}" | jq -r '.urls[] | select(.packagetype == "sdist")') || {
+		_error "${response}"
+		_error 'could not parse metadata from the above response'
+		return 1
+	}
+	download_url=$(echo "${metadata}" | jq -r '.url') || {
+		_error "${metadata}"
+		_error 'could not parse the download URL from the above metadata'
+		return 1
+	}
+	tar_checksum=$(echo "${metadata}" | jq -r '.digests.sha256') || {
+		_error "${metadata}"
+		_error 'could not parse the checksum from the above metadata'
+		return 1
+	}
 
 	local -r tar_file="${download_path}/yamllint-${version}.tar.gz"
 
-	mkdir -p "${download_path}"
+	mkdir -p "${download_path}" || {
+		_error "failed to create the download directory ${download_path}"
+		return 1
+	}
 
 	echo "Downloading yamllint from ${download_url} to ${download_path}"
-	curl --silent --show-error \
+	curl --fail --silent --show-error \
 		--output "${tar_file}" \
-		"${download_url}"
+		"${download_url}" ||
+		{
+			_error "failed to download yamllint from ${download_url}"
+			return 1
+		}
 
 	echo "Verifying checksum for ${tar_file}"
 	_validate_checksum "${tar_file}" "${tar_checksum}"
@@ -147,7 +166,12 @@ download_version() {
 	tar --extract --gzip \
 		--directory "${download_path}" \
 		--file "${tar_file}" \
-		"yamllint-${version}"
+		"yamllint-${version}" ||
+		{
+			_error "failed to extract ${tar_file} into ${download_path}"
+			rm -f "${tar_file}"
+			return 1
+		}
 
 	rm -f "${tar_file}"
 }
@@ -166,15 +190,25 @@ install_version() {
 	local -r src_path="${install_path}/${src_dir_name}"
 	local -r venv_path="${src_path}/__venv__"
 
-	mkdir -p "${bin_install_path}"
+	mkdir -p "${bin_install_path}" || {
+		_error "failed to create the installation directory ${bin_install_path}"
+		return 1
+	}
 
 	if [ -n "${download_path}" ]; then
 		cp -r "${download_path}/${src_dir_name}" "${install_path}"
 	fi
 
-	${python_command} -m venv "${venv_path}"
+	${python_command} -m venv "${venv_path}" || {
+		_error "failed to create virtual environment in ${venv_path}"
+		return 1
+	}
+
 	# shellcheck disable=SC1091
-	source "${venv_path}/bin/activate"
+	source "${venv_path}/bin/activate" || {
+		_error 'failed to activate virtual environment'
+		return 1
+	}
 
 	(
 		cd "${src_path}" || return
@@ -184,7 +218,11 @@ install_version() {
 			--quiet \
 			--disable-pip-version-check \
 			--requirement yamllint.egg-info/requires.txt
-	) || return 1
+	) || {
+		deactivate
+		_error 'failed to install yamllint dependencies'
+		return 1
+	}
 
 	deactivate
 
