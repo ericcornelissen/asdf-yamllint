@@ -52,9 +52,8 @@ _validate_checksum() {
 
 check_env_var() {
 	local -r name="$1"
-	local -r value="$2"
 
-	if [ -z "${value}" ]; then
+	if [ -z "${!name}" ]; then
 		echo "Missing '${name}'"
 		exit "${exit_code_missing_env_var}"
 	fi
