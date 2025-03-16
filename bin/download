@@ -8,7 +8,7 @@ plugin_dir=$(dirname "$(dirname "${current_script_path}")")
 # shellcheck source=./lib/common.sh
 source "${plugin_dir}/lib/common.sh"
 
-check_env_var "ASDF_DOWNLOAD_PATH"
-check_env_var "ASDF_INSTALL_VERSION"
+check_env_var 'ASDF_DOWNLOAD_PATH'
+check_env_var 'ASDF_INSTALL_VERSION'
 
 download_version "${ASDF_INSTALL_VERSION}" "${ASDF_DOWNLOAD_PATH}"
