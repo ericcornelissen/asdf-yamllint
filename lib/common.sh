@@ -1,11 +1,12 @@
-#!/usr/bin/env bash
+# shellcheck shell=bash
 # SPDX-License-Identifier: MIT
-
-set -eo pipefail
 
 base_url="https://pypi.org/pypi/yamllint"
 
-exit_code_missing_env_var=1
+_error() {
+	local -r msg="$1"
+	echo "Error: ${msg}" >&2
+}
 
 _get_python_command() {
 	# Both `python3` and `python` are names commonly used for the Python 3 binary.
@@ -34,18 +35,29 @@ _validate_checksum() {
 	local -r file="$1"
 	local -r expected_checksum="$2"
 
-	local -r checksum_file="$(dirname "${file}")/checksum.txt"
+	if [[ ! -f ${file} ]]; then
+		_error "'${file}' not found"
+		return 1
+	fi
 
 	# Different systems have different programs for computing SHA checksums. To
 	# broaden support, multiple programs are considered. We use whichever one is
 	# available on the current system.
 	local shasum_command='shasum -a 256'
 	if ! command -v shasum &>/dev/null; then
-		shasum_command='sha256sum'
+		if command -v sha256sum &>/dev/null; then
+			shasum_command='sha256sum'
+		fi
 	fi
 
+	local -r checksum_file="$(dirname "${file}")/checksum.txt"
 	echo "${expected_checksum}  ${file}" >"${checksum_file}"
-	${shasum_command} -c "${checksum_file}" 1>/dev/null
+
+	${shasum_command} -c "${checksum_file}" 1>/dev/null 2>/dev/null || {
+		_error 'computed checksums did NOT match'
+		rm -f "${checksum_file}"
+		return 1
+	}
 
 	rm -f "${checksum_file}"
 }
@@ -54,47 +66,110 @@ check_env_var() {
 	local -r name="$1"
 
 	if [ -z "${!name}" ]; then
-		echo "Missing '${name}'"
-		exit "${exit_code_missing_env_var}"
+		_error "missing environment variable '${name}'"
+		return 1
 	fi
 }
 
 latest_version() {
-	curl --silent "${base_url}/json" |
-		jq --raw-output '.info.version'
+	local -r url="${base_url}/json"
+
+	response=$(curl --fail --silent "${url}") || {
+		_error "could not fetch metadata from ${url}"
+		return 1
+	}
+
+	version=$(echo "${response}" | jq --raw-output '.info.version') || {
+		_error "${response}"
+		_error 'could not parse metadata from the above response'
+		return 1
+	}
+
+	if [[ -z ${version} || ${version} == "null" ]]; then
+		_error "${response}"
+		_error 'could not find version information in the above response'
+		return 1
+	fi
+
+	echo "${version}"
 }
 
 list_versions() {
-	curl --silent "${base_url}/json" |
-		jq --raw-output '.releases | keys[]' |
-		_sort_versions
+	local -r url="${base_url}/json"
+
+	response=$(curl --fail --silent "${url}") || {
+		_error "could not fetch metadata from ${url}"
+		return 1
+	}
+
+	versions=$(echo "${response}" | jq --raw-output '.releases | keys[]') || {
+		_error "${response}"
+		_error 'could not parse metadata from the above response'
+		return 1
+	}
+
+	if [[ -z ${versions} ]]; then
+		_error "${response}"
+		_error 'could not find version information in the above response'
+		return 1
+	fi
+
+	echo "${versions}" | _sort_versions
 }
 
 download_version() {
 	local -r version="$1"
 	local -r download_path="$2"
 
-	local -r version_json="$(curl --silent "${base_url}/${version}/json")"
-	local -r download_json="$(echo "${version_json}" | jq -r '.urls[] | select(.packagetype == "sdist")')"
-	local -r download_url="$(echo "${download_json}" | jq -r '.url')"
-	local -r tar_checksum="$(echo "${download_json}" | jq -r '.digests.sha256')"
+	local -r version_url="${base_url}/${version}/json"
+	response="$(curl --fail --silent "${version_url}")" || {
+		_error "could not fetch metadata from ${version_url}"
+		return 1
+	}
+	metadata=$(echo "${response}" | jq -r '.urls[] | select(.packagetype == "sdist")') || {
+		_error "${response}"
+		_error 'could not parse metadata from the above response'
+		return 1
+	}
+	download_url=$(echo "${metadata}" | jq -r '.url') || {
+		_error "${metadata}"
+		_error 'could not parse the download URL from the above metadata'
+		return 1
+	}
+	tar_checksum=$(echo "${metadata}" | jq -r '.digests.sha256') || {
+		_error "${metadata}"
+		_error 'could not parse the checksum from the above metadata'
+		return 1
+	}
 
 	local -r tar_file="${download_path}/yamllint-${version}.tar.gz"
 
-	mkdir -p "${download_path}"
+	mkdir -p "${download_path}" || {
+		_error "failed to create the download directory ${download_path}"
+		return 1
+	}
 
 	echo "Downloading yamllint from ${download_url} to ${download_path}"
-	curl --silent --show-error \
+	curl --fail --silent --show-error \
 		--output "${tar_file}" \
-		"${download_url}"
+		"${download_url}" ||
+		{
+			_error "failed to download yamllint from ${download_url}"
+			return 1
+		}
 
 	echo "Verifying checksum for ${tar_file}"
-	_validate_checksum "${tar_file}" "${tar_checksum}"
+	_validate_checksum "${tar_file}" "${tar_checksum}" || return 1
 
 	tar --extract --gzip \
 		--directory "${download_path}" \
 		--file "${tar_file}" \
-		"yamllint-${version}"
+		"yamllint-${version}" ||
+		{
+			_error "failed to extract ${tar_file} into ${download_path}"
+			rm -f "${tar_file}"
+			return 1
+		}
 
 	rm -f "${tar_file}"
 }
@@ -113,25 +188,39 @@ install_version() {
 	local -r src_path="${install_path}/${src_dir_name}"
 	local -r venv_path="${src_path}/__venv__"
 
-	mkdir -p "${bin_install_path}"
+	mkdir -p "${bin_install_path}" || {
+		_error "failed to create the installation directory ${bin_install_path}"
+		return 1
+	}
 
 	if [ -n "${download_path}" ]; then
 		cp -r "${download_path}/${src_dir_name}" "${install_path}"
 	fi
 
-	${python_command} -m venv "${venv_path}"
+	${python_command} -m venv "${venv_path}" || {
+		_error "failed to create a virtual environment in ${venv_path}"
+		return 1
+	}
+
 	# shellcheck disable=SC1091
-	source "${venv_path}/bin/activate"
+	source "${venv_path}/bin/activate" || {
+		_error 'failed to activate the virtual environment'
+		return 1
+	}
 
 	(
-		cd "${src_path}"
+		cd "${src_path}" || return
 		sed -i -e '/^\[/d' yamllint.egg-info/requires.txt
 		${python_command} \
 			-m pip install \
 			--quiet \
 			--disable-pip-version-check \
 			--requirement yamllint.egg-info/requires.txt
-	)
+	) || {
+		deactivate || true
+		_error 'failed to install yamllint dependencies'
+		return 1
+	}
 
 	deactivate
 
