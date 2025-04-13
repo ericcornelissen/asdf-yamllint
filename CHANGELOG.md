@@ -6,6 +6,7 @@ All notable changes to _asdf-yamllint_ will be documented in this file.
 
 ## Changes
 
+- (2025-04-13) Update error handling
 - (2024-12-03) Implemented dedicated `latest-stable` command.
 - (2024-11-14) Disable the `pip` update notice.
 - (2024-05-31) Fix invalid option error from `sha256sum`.
