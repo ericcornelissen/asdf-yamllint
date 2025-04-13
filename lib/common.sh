@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+# shellcheck shell=bash
 # SPDX-License-Identifier: MIT
 
 base_url="https://pypi.org/pypi/yamllint"
@@ -35,8 +35,6 @@ _validate_checksum() {
 	local -r file="$1"
 	local -r expected_checksum="$2"
 
-	local -r checksum_file="$(dirname "${file}")/checksum.txt"
-
 	if [[ ! -f ${file} ]]; then
 		_error "'${file}' not found"
 		return 1
@@ -49,12 +47,10 @@ _validate_checksum() {
 	if ! command -v shasum &>/dev/null; then
 		if command -v sha256sum &>/dev/null; then
 			shasum_command='sha256sum'
-		else
-			_error 'neither '"'shasum'"' nor '"'sha256sum'"' is available'
-			return 1
 		fi
 	fi
 
+	local -r checksum_file="$(dirname "${file}")/checksum.txt"
 	echo "${expected_checksum}  ${file}" >"${checksum_file}"
 
 	${shasum_command} -c "${checksum_file}" 1>/dev/null 2>/dev/null || {
@@ -62,6 +58,8 @@ _validate_checksum() {
 		rm -f "${checksum_file}"
 		return 1
 	}
+
+	rm -f "${checksum_file}"
 }
 
 check_env_var() {
@@ -161,7 +159,7 @@ download_version() {
 		}
 
 	echo "Verifying checksum for ${tar_file}"
-	_validate_checksum "${tar_file}" "${tar_checksum}"
+	_validate_checksum "${tar_file}" "${tar_checksum}" || return 1
 
 	tar --extract --gzip \
 		--directory "${download_path}" \
@@ -219,7 +217,7 @@ install_version() {
 			--disable-pip-version-check \
 			--requirement yamllint.egg-info/requires.txt
 	) || {
-		deactivate
+		deactivate || true
 		_error 'failed to install yamllint dependencies'
 		return 1
 	}
