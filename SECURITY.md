@@ -7,25 +7,17 @@ We appreciate your efforts to responsibly disclose your findings. Due to the
 non-funded and open-source nature of the project, we take a best-efforts
 approach when it comes to engaging with security reports.
 
-This document should be considered expired after 2025-06-01. If you are reading
+This document should be considered expired after 2026-01-01. If you are reading
 this after that date, try to find an up-to-date version in the official source
 repository.
 
 ## Supported Versions
 
-The table below shows which versions of the project are currently supported with
-security updates.
-
-| Version | End-of-life |
-| ------: | :---------- |
-|   1.x.x | -           |
-
-_This table only includes information on versions `<2.0.0`._
+Only the latest release of the project is supported with security updates.
 
 ## Reporting a Vulnerability
 
-To report a security issue in the latest version of a supported version range,
-either (in order of preference):
+To report a security issue either (in order of preference):
 
 - [Report it through GitHub][new github advisory], or
 - Send an email to [security@ericcornelissen.dev] with the terms "SECURITY" and
@@ -33,8 +25,7 @@ either (in order of preference):
 
 Please do not open a regular issue or Pull Request in the public repository.
 
-To report a security issue in an unsupported version of the project, or if the
-latest version of a supported version range isn't affected, please report it
+To report a security issue in an old version of the project, please report it
 publicly. For example, as a regular issue in the public repository. If in doubt,
 report the issue privately.
 
