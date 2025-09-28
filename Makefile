@@ -141,8 +141,10 @@ $(ASDF): .tool-versions | $(TMP_DIR)
 	@asdf install || true
 	@touch $(ASDF)
 $(DEV_IMG): .tool-versions Containerfile.dev | $(TMP_DIR)
+ifndef ASDF_YAMLLINT_CONTAINER
 	@$(CONTAINER_ENGINE) build \
 		--tag asdf-yamllint-dev-img \
 		--file Containerfile.dev \
 		.
+endif
 	@touch $(DEV_IMG)
