@@ -54,8 +54,9 @@ lint-ci: $(ASDF) ## Lint CI workflow files
 	@SHELLCHECK_OPTS=$(SHELLCHECK_OPTS) \
 		actionlint
 
-lint-container: $(ASDF) ## Lint the Containerfile
+lint-container: $(ASDF) dev-img ## Lint the Containerfile
 	@hadolint Containerfile.dev
+	@[ -z "$$ASDF_YAMLLINT_CONTAINER" ] && dockle asdf-yamllint-dev-img || :
 
 lint-sh: $(ASDF) ## Lint .sh files
 	@SHELLCHECK_OPTS=$(SHELLCHECK_OPTS) \
