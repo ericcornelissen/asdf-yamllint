@@ -8,5 +8,14 @@ updates:
     schedule:
       interval: daily
       time: "05:00"
+    cooldown:
+      default-days: 7
     labels:
       - dependencies
+    groups:
+      asdf-vm:
+        patterns:
+          - asdf-vm/actions/*
+      codeql:
+        patterns:
+          - github/codeql-action/*
