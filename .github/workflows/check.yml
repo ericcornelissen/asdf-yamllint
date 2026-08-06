@@ -19,7 +19,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4.37.3
+        uses: github/codeql-action/init@f205ea1c3313d32999d8d6a48b4f6530d4437b38 # v4.37.4
         with:
           config-file: ./.github/codeql.yml
           languages: actions
@@ -81,7 +81,7 @@ jobs:
       - name: Perform Semgrep analysis
         run: semgrep --sarif --output semgrep.sarif
       - name: Upload Semgrep report to GitHub
-        uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4.36.0
+        uses: github/codeql-action/upload-sarif@f205ea1c3313d32999d8d6a48b4f6530d4437b38 # v4.37.4
         if: ${{ failure() || success() }}
         with:
           sarif_file: semgrep.sarif
